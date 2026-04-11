@@ -24,7 +24,7 @@ const mockGetVariable = mock(async (): Promise<GtmVariableDetail> => ({
 }));
 const mockGetFirstWorkspaceId = mock(async (): Promise<string> => '1');
 
-mock.module('../../src/gtm-client', () => ({
+mock.module('../../src/gtmClient', () => ({
   getTag: mockGetTag,
   getTrigger: mockGetTrigger,
   getVariable: mockGetVariable,

@@ -1,3 +1,5 @@
+import type { google } from 'googleapis';
+
 import {
   listAccounts,
   listContainers,
@@ -5,9 +7,8 @@ import {
   listTags,
   listTriggers,
   listVariables,
-} from '../gtm-client';
+} from '../gtmClient';
 import type { CommandResult } from '../types';
-import type { google } from 'googleapis';
 
 type Auth = InstanceType<typeof google.auth.GoogleAuth>;
 

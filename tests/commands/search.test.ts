@@ -13,7 +13,7 @@ const mockListVariables = mock(async (): Promise<GtmVariable[]> => [
   { variableId: '30', name: 'DL - purchaseAmount', type: 'v' },
 ]);
 
-mock.module('../../src/gtm-client', () => ({
+mock.module('../../src/gtmClient', () => ({
   getFirstWorkspaceId: mockGetFirstWorkspaceId,
   listTags: mockListTags,
   listTriggers: mockListTriggers,

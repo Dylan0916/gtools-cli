@@ -1,6 +1,7 @@
-import { getFirstWorkspaceId, listTags, listTriggers, listVariables } from '../gtm-client';
-import type { CommandResult, SearchResult } from '../types';
 import type { google } from 'googleapis';
+
+import { getFirstWorkspaceId, listTags, listTriggers, listVariables } from '../gtmClient';
+import type { CommandResult, SearchResult } from '../types';
 
 type Auth = InstanceType<typeof google.auth.GoogleAuth>;
 

@@ -1,8 +1,9 @@
 import { getAuth } from './auth';
-import { runListAccounts, runListContainers, runListTags, runListTriggers, runListVariables } from './commands/list';
-import { runGetTag, runGetTrigger, runGetVariable } from './commands/get';
-import { runSearch } from './commands/search';
 import type { CommandResult } from './types';
+
+import { runGetTag, runGetTrigger, runGetVariable } from './commands/get';
+import { runListAccounts, runListContainers, runListTags, runListTriggers, runListVariables } from './commands/list';
+import { runSearch } from './commands/search';
 
 // Commands that need only --account
 const ACCOUNT_COMMANDS = ['list-containers'];
