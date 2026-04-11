@@ -9,10 +9,10 @@ Run a Bun script to fetch GTM data and answer the user's question.
 
 ## Prerequisites
 
-This skill requires `GOOGLE_APPLICATION_CREDENTIALS` to be set. If the command returns an auth error, tell the user to add this to `~/.zshrc` and reload:
+This skill requires `GOOGLE_APPLICATION_CREDENTIALS` to be set to the path of a Google service account JSON key file. If the command returns an auth error, tell the user to add this to `~/.zshrc` and reload:
 
 ```bash
-export GOOGLE_APPLICATION_CREDENTIALS="$HOME/Downloads/my-first-94428-56c47e21842e.json"
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-service-account.json"
 source ~/.zshrc
 ```
 
