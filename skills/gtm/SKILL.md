@@ -1,27 +1,28 @@
 ---
 name: gtm
-description: Query Google Tag Manager containers, tags, triggers, and variables using natural language. Triggers when the user asks about GTM resources.
-triggers:
-  - GTM
-  - Google Tag Manager
-  - tag manager
-  - "gtm tag"
-  - "gtm trigger"
-  - "gtm variable"
-  - "gtm container"
+description: Query Google Tag Manager (GTM) data — containers, tags, triggers, variables, and custom templates — via a Bun CLI script. Use this skill whenever the user mentions GTM, Google Tag Manager, tag manager, or asks about GTM tags, triggers, variables, containers, workspaces, or custom templates. Also use when the user asks things like "有哪些 tag", "這個 trigger 是什麼", "搜尋購買相關的代碼", "範本的程式碼是什麼", or any question about their GTM setup, even if they don't say "GTM" explicitly but are clearly asking about tracking tags, marketing pixels, or tag templates.
 ---
 
 # GTM Query Skill
 
-Use this skill whenever the user asks about Google Tag Manager content — containers, tags, triggers, or variables.
+Run a Bun script to fetch GTM data and answer the user's question.
 
-## Script Location
+## Prerequisites
+
+This skill requires `GOOGLE_APPLICATION_CREDENTIALS` to be set. If the command returns an auth error, tell the user to add this to `~/.zshrc` and reload:
 
 ```bash
-/Users/dylan/projects/bun/gtm-agent/src/gtm.ts
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/Downloads/my-first-94428-56c47e21842e.json"
+source ~/.zshrc
 ```
 
-Run with: `bun run /Users/dylan/projects/bun/gtm-agent/src/gtm.ts <command> [flags]`
+## How to Run
+
+```bash
+bun run /Users/dylan/projects/bun/gtm-agent/src/gtm.ts <command> [flags]
+```
+
+This relies on `GOOGLE_APPLICATION_CREDENTIALS` being set in the environment (see Prerequisites above).
 
 ## Available Commands
 
@@ -35,6 +36,8 @@ Run with: `bun run /Users/dylan/projects/bun/gtm-agent/src/gtm.ts <command> [fla
 | `get-tag` | `--account <id> --container <id> --id <tagId>` | Full tag details |
 | `get-trigger` | `--account <id> --container <id> --id <triggerId>` | Full trigger details |
 | `get-variable` | `--account <id> --container <id> --id <variableId>` | Full variable details |
+| `list-templates` | `--account <id> --container <id>` | List custom templates in a container |
+| `get-template` | `--account <id> --container <id> --id <templateId>` | Full template details including source code (`templateData`) |
 | `search` | `--account <id> --container <id> --query <keyword>` | Search by keyword |
 
 **Important:** `--account` takes the numeric accountId (not the name). `--container` takes the numeric containerId (not the GTM-XXXXXX public ID). Always run `list-accounts` → `list-containers` first to get these IDs if unknown.
@@ -50,9 +53,3 @@ Run with: `bun run /Users/dylan/projects/bun/gtm-agent/src/gtm.ts <command> [fla
 ## Error Handling
 
 If the script outputs `{ "error": "..." }`, explain the error to the user in Traditional Chinese and suggest the fix.
-
-If `GOOGLE_APPLICATION_CREDENTIALS` is not set, tell the user to add this to `~/.zshrc`:
-```bash
-export GOOGLE_APPLICATION_CREDENTIALS="$HOME/Downloads/my-first-94428-56c47e21842e.json"
-```
-Then reload with `source ~/.zshrc`.
