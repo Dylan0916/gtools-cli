@@ -52,8 +52,19 @@ export type CommandResult =
   | { tag: GtmTagDetail }
   | { trigger: GtmTriggerDetail }
   | { variable: GtmVariableDetail }
+  | { templates: GtmTemplate[] }
+  | { template: GtmTemplateDetail }
   | { results: SearchResult[] }
   | { error: string };
+
+export interface GtmTemplate {
+  templateId: string;
+  name: string;
+}
+
+export interface GtmTemplateDetail extends GtmTemplate {
+  templateData: string;
+}
 
 export interface SearchResult {
   kind: 'tag' | 'trigger' | 'variable';

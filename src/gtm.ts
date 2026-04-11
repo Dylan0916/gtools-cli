@@ -4,13 +4,14 @@ import type { CommandResult } from './types';
 import { runGetTag, runGetTrigger, runGetVariable } from './commands/get';
 import { runListAccounts, runListContainers, runListTags, runListTriggers, runListVariables } from './commands/list';
 import { runSearch } from './commands/search';
+import { runGetTemplate, runListTemplates } from './commands/template';
 
 // Commands that need only --account
 const ACCOUNT_COMMANDS = ['list-containers'];
 // Commands that need --account + --container
-const CONTAINER_COMMANDS = ['list-tags', 'list-triggers', 'list-variables', 'search'];
+const CONTAINER_COMMANDS = ['list-tags', 'list-triggers', 'list-variables', 'list-templates', 'search'];
 // Commands that need --account + --container + --id
-const ID_COMMANDS = ['get-tag', 'get-trigger', 'get-variable'];
+const ID_COMMANDS = ['get-tag', 'get-trigger', 'get-variable', 'get-template'];
 
 export interface ParsedArgs {
   command: string;
@@ -72,7 +73,7 @@ async function run(): Promise<void> {
 
   if (!args.command) {
     console.log(JSON.stringify({
-      error: 'No command provided. Available: list-accounts, list-containers, list-tags, list-triggers, list-variables, get-tag, get-trigger, get-variable, search',
+      error: 'No command provided. Available: list-accounts, list-containers, list-tags, list-triggers, list-variables, list-templates, get-tag, get-trigger, get-variable, get-template, search',
     }));
     process.exit(1);
   }
@@ -105,6 +106,12 @@ async function run(): Promise<void> {
         break;
       case 'get-variable':
         result = await runGetVariable(auth, args.account!, args.container!, args.id!);
+        break;
+      case 'list-templates':
+        result = await runListTemplates(auth, args.account!, args.container!);
+        break;
+      case 'get-template':
+        result = await runGetTemplate(auth, args.account!, args.container!, args.id!);
         break;
       case 'search':
         if (!args.query) {

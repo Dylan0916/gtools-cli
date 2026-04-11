@@ -4,6 +4,8 @@ import type {
   GtmContainer,
   GtmTag,
   GtmTagDetail,
+  GtmTemplate,
+  GtmTemplateDetail,
   GtmTrigger,
   GtmTriggerDetail,
   GtmVariable,
@@ -154,6 +156,41 @@ export async function getTrigger(
         value: p.value ?? undefined,
       })),
     })),
+  };
+}
+
+export async function listTemplates(
+  auth: Auth,
+  accountId: string,
+  containerId: string,
+  workspaceId: string
+): Promise<GtmTemplate[]> {
+  const res = await tagmanager.accounts.containers.workspaces.templates.list({
+    auth,
+    parent: `accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}`,
+  });
+  return (res.data.template ?? []).map((t) => ({
+    templateId: t.templateId!,
+    name: t.name!,
+  }));
+}
+
+export async function getTemplate(
+  auth: Auth,
+  accountId: string,
+  containerId: string,
+  workspaceId: string,
+  templateId: string
+): Promise<GtmTemplateDetail> {
+  const res = await tagmanager.accounts.containers.workspaces.templates.get({
+    auth,
+    path: `accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/templates/${templateId}`,
+  });
+  const t = res.data;
+  return {
+    templateId: t.templateId!,
+    name: t.name!,
+    templateData: t.templateData ?? '',
   };
 }
 
