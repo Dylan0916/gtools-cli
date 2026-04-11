@@ -6,6 +6,9 @@
     "start": "bun run src/gtm.ts",
     "test": "bun test"
   },
+  "bin": {
+    "gtm-cli": "src/gtm.ts"
+  },
   "dependencies": {
     "googleapis": "^171.4.0"
   },

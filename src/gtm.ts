@@ -1,3 +1,4 @@
+#!/usr/bin/env bun
 import { getAuth } from './auth';
 import type { CommandResult } from './types';
 

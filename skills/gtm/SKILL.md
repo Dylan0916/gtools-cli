@@ -19,10 +19,10 @@ source ~/.zshrc
 ## How to Run
 
 ```bash
-bun run /Users/dylan/projects/bun/gtm-agent/src/gtm.ts <command> [flags]
+gtm-cli <command> [flags]
 ```
 
-This relies on `GOOGLE_APPLICATION_CREDENTIALS` being set in the environment (see Prerequisites above).
+This relies on `GOOGLE_APPLICATION_CREDENTIALS` being set in the environment (see Prerequisites above). If `gtm-cli` is not found, run `bun link` inside the repo directory first.
 
 ## Available Commands
 
