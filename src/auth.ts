@@ -9,7 +9,7 @@ export function getAuth(): InstanceType<typeof google.auth.GoogleAuth> {
         error:
           'GOOGLE_APPLICATION_CREDENTIALS is not set.\n' +
           'Add the following line to your ~/.zshrc:\n' +
-          'export GOOGLE_APPLICATION_CREDENTIALS="$HOME/Downloads/my-first-94428-56c47e21842e.json"',
+          'export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-service-account.json"',
       })
     );
     process.exit(1);
