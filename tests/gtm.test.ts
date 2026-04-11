@@ -1,21 +1,4 @@
-import { describe, it, expect, mock } from 'bun:test';
-
-mock.module('../src/auth', () => ({ getAuth: mock(() => ({})) }));
-mock.module('../src/commands/list', () => ({
-  runListAccounts: mock(async () => ({ accounts: [] })),
-  runListContainers: mock(async () => ({ containers: [] })),
-  runListTags: mock(async () => ({ tags: [] })),
-  runListTriggers: mock(async () => ({ triggers: [] })),
-  runListVariables: mock(async () => ({ variables: [] })),
-}));
-mock.module('../src/commands/get', () => ({
-  runGetTag: mock(async () => ({ tag: {} })),
-  runGetTrigger: mock(async () => ({ trigger: {} })),
-  runGetVariable: mock(async () => ({ variable: {} })),
-}));
-mock.module('../src/commands/search', () => ({
-  runSearch: mock(async () => ({ results: [] })),
-}));
+import { describe, it, expect } from 'bun:test';
 
 const { parseCliArgs } = await import('../src/gtm');
 
