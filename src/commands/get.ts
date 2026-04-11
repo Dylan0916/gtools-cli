@@ -1,12 +1,9 @@
-import type { google } from 'googleapis';
-
 import { getFirstWorkspaceId, getTag, getTrigger, getVariable } from '../gtmClient';
+import type { AuthClient } from '../auth';
 import type { CommandResult } from '../types';
 
-type Auth = InstanceType<typeof google.auth.GoogleAuth>;
-
 export async function runGetTag(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   tagId: string,
@@ -17,7 +14,7 @@ export async function runGetTag(
 }
 
 export async function runGetTrigger(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   triggerId: string,
@@ -28,7 +25,7 @@ export async function runGetTrigger(
 }
 
 export async function runGetVariable(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   variableId: string,

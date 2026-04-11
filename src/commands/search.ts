@@ -1,12 +1,9 @@
-import type { google } from 'googleapis';
-
 import { getFirstWorkspaceId, listTags, listTriggers, listVariables } from '../gtmClient';
+import type { AuthClient } from '../auth';
 import type { CommandResult, SearchResult } from '../types';
 
-type Auth = InstanceType<typeof google.auth.GoogleAuth>;
-
 export async function runSearch(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   query: string
