@@ -1,8 +1,9 @@
 #!/usr/bin/env bun
-import { getAuth } from './auth';
+import { getAuthClient } from './auth';
 import type { CommandResult } from './types';
 
 import { runGetTag, runGetTrigger, runGetVariable } from './commands/get';
+import { runLogin } from './commands/login';
 import { runListAccounts, runListContainers, runListTags, runListTriggers, runListVariables } from './commands/list';
 import { runSearch } from './commands/search';
 import { runGetTemplate, runListTemplates } from './commands/template';
@@ -74,12 +75,18 @@ async function run(): Promise<void> {
 
   if (!args.command) {
     console.log(JSON.stringify({
-      error: 'No command provided. Available: list-accounts, list-containers, list-tags, list-triggers, list-variables, list-templates, get-tag, get-trigger, get-variable, get-template, search',
+      error: 'No command provided. Available: login, list-accounts, list-containers, list-tags, list-triggers, list-variables, list-templates, get-tag, get-trigger, get-variable, get-template, search',
     }));
     process.exit(1);
   }
 
-  const auth = getAuth();
+  // login doesn't require existing credentials
+  if (args.command === 'login') {
+    await runLogin();
+    return;
+  }
+
+  const auth = getAuthClient();
   let result: CommandResult;
 
   try {

@@ -11,12 +11,11 @@ import type {
   GtmVariable,
   GtmVariableDetail,
 } from './types';
+import type { AuthClient } from './auth';
 
 const tagmanager = google.tagmanager('v2');
 
-type Auth = InstanceType<typeof google.auth.GoogleAuth>;
-
-export async function listAccounts(auth: Auth): Promise<GtmAccount[]> {
+export async function listAccounts(auth: AuthClient): Promise<GtmAccount[]> {
   const res = await tagmanager.accounts.list({ auth });
   return (res.data.account ?? []).map((a) => ({
     accountId: a.accountId!,
@@ -24,7 +23,7 @@ export async function listAccounts(auth: Auth): Promise<GtmAccount[]> {
   }));
 }
 
-export async function listContainers(auth: Auth, accountId: string): Promise<GtmContainer[]> {
+export async function listContainers(auth: AuthClient, accountId: string): Promise<GtmContainer[]> {
   const res = await tagmanager.accounts.containers.list({
     auth,
     parent: `accounts/${accountId}`,
@@ -38,7 +37,7 @@ export async function listContainers(auth: Auth, accountId: string): Promise<Gtm
 }
 
 export async function getFirstWorkspaceId(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string
 ): Promise<string> {
@@ -54,7 +53,7 @@ export async function getFirstWorkspaceId(
 }
 
 export async function listTags(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   workspaceId: string
@@ -72,7 +71,7 @@ export async function listTags(
 }
 
 export async function listTriggers(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   workspaceId: string
@@ -89,7 +88,7 @@ export async function listTriggers(
 }
 
 export async function listVariables(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   workspaceId: string
@@ -106,7 +105,7 @@ export async function listVariables(
 }
 
 export async function getTag(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   workspaceId: string,
@@ -133,7 +132,7 @@ export async function getTag(
 }
 
 export async function getTrigger(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   workspaceId: string,
@@ -160,7 +159,7 @@ export async function getTrigger(
 }
 
 export async function listTemplates(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   workspaceId: string
@@ -176,7 +175,7 @@ export async function listTemplates(
 }
 
 export async function getTemplate(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   workspaceId: string,
@@ -195,7 +194,7 @@ export async function getTemplate(
 }
 
 export async function getVariable(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   workspaceId: string,

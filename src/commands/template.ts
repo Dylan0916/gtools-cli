@@ -1,12 +1,9 @@
-import type { google } from 'googleapis';
-
 import { getFirstWorkspaceId, getTemplate, listTemplates } from '../gtmClient';
+import type { AuthClient } from '../auth';
 import type { CommandResult } from '../types';
 
-type Auth = InstanceType<typeof google.auth.GoogleAuth>;
-
 export async function runListTemplates(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
 ): Promise<CommandResult> {
@@ -16,7 +13,7 @@ export async function runListTemplates(
 }
 
 export async function runGetTemplate(
-  auth: Auth,
+  auth: AuthClient,
   accountId: string,
   containerId: string,
   templateId: string,
