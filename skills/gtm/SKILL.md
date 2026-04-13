@@ -9,45 +9,47 @@ Run a Bun script to fetch GTM data and answer the user's question.
 
 ## Prerequisites
 
-This skill requires `GOOGLE_APPLICATION_CREDENTIALS` to be set to the path of a Google service account JSON key file. If the command returns an auth error, tell the user to add this to `~/.zshrc` and reload:
+This skill requires OAuth login. If the command returns an auth error, tell the user to:
 
-```bash
-export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-service-account.json"
-source ~/.zshrc
-```
+1. Set environment variables in `~/.zshrc`:
+   ```bash
+   export GOOGLE_CLIENT_ID="your-client-id"
+   export GOOGLE_CLIENT_SECRET="your-client-secret"
+   ```
+2. Run `gtools-cli login` to authenticate.
+
+If `gtools-cli` is not found, run `bun link` inside the gtools-cli repo directory first.
 
 ## How to Run
 
 ```bash
-gtools-cli <command> [flags]
+gtools-cli gtm <command> [flags]
 ```
-
-This relies on `GOOGLE_APPLICATION_CREDENTIALS` being set in the environment (see Prerequisites above). If `gtools-cli` is not found, run `bun link` inside the repo directory first.
 
 ## Available Commands
 
 | Command | Flags | Purpose |
 |---------|-------|---------|
-| `list-accounts` | (none) | List all GTM accounts |
-| `list-containers` | `--account <accountId>` | List containers in an account |
-| `list-tags` | `--account <id> --container <id>` | List tags in a container |
-| `list-triggers` | `--account <id> --container <id>` | List triggers in a container |
-| `list-variables` | `--account <id> --container <id>` | List variables in a container |
-| `get-tag` | `--account <id> --container <id> --id <tagId>` | Full tag details |
-| `get-trigger` | `--account <id> --container <id> --id <triggerId>` | Full trigger details |
-| `get-variable` | `--account <id> --container <id> --id <variableId>` | Full variable details |
-| `list-templates` | `--account <id> --container <id>` | List custom templates in a container |
-| `get-template` | `--account <id> --container <id> --id <templateId>` | Full template details including source code (`templateData`) |
-| `search` | `--account <id> --container <id> --query <keyword>` | Search by keyword |
+| `gtm list-accounts` | (none) | List all GTM accounts |
+| `gtm list-containers` | `--account <accountId>` | List containers in an account |
+| `gtm list-tags` | `--account <id> --container <id>` | List tags in a container |
+| `gtm list-triggers` | `--account <id> --container <id>` | List triggers in a container |
+| `gtm list-variables` | `--account <id> --container <id>` | List variables in a container |
+| `gtm get-tag` | `--account <id> --container <id> --id <tagId>` | Full tag details |
+| `gtm get-trigger` | `--account <id> --container <id> --id <triggerId>` | Full trigger details |
+| `gtm get-variable` | `--account <id> --container <id> --id <variableId>` | Full variable details |
+| `gtm list-templates` | `--account <id> --container <id>` | List custom templates in a container |
+| `gtm get-template` | `--account <id> --container <id> --id <templateId>` | Full template details including source code (`templateData`) |
+| `gtm search` | `--account <id> --container <id> --query <keyword>` | Search by keyword |
 
-**Important:** `--account` takes the numeric accountId (not the name). `--container` takes the numeric containerId (not the GTM-XXXXXX public ID). Always run `list-accounts` → `list-containers` first to get these IDs if unknown.
+**Important:** `--account` takes the numeric accountId (not the name). `--container` takes the numeric containerId (not the GTM-XXXXXX public ID). Always run `gtm list-accounts` → `gtm list-containers` first to get these IDs if unknown.
 
 ## Workflow
 
-1. If the user mentions a container by name (e.g., "我的網站"), run `list-accounts` then `list-containers` to find the accountId and containerId.
-2. For listing questions ("有哪些 tag?"), run the appropriate `list-*` command.
-3. For detail questions ("這個 tag 的設定?"), run `list-*` first to get the ID, then `get-*`.
-4. For keyword questions ("有沒有關於購買的 tag?"), use `search`.
+1. If the user mentions a container by name (e.g., "我的網站"), run `gtools-cli gtm list-accounts` then `gtools-cli gtm list-containers --account <id>` to find the accountId and containerId.
+2. For listing questions ("有哪些 tag?"), run the appropriate `gtm list-*` command.
+3. For detail questions ("這個 tag 的設定?"), run `gtm list-*` first to get the ID, then `gtm get-*`.
+4. For keyword questions ("有沒有關於購買的 tag?"), use `gtm search`.
 5. Parse the JSON output and answer in Traditional Chinese.
 
 ## Error Handling
