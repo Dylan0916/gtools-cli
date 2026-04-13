@@ -151,12 +151,12 @@ Adding a new Google service means adding a new directory under `src/services/` w
 Two skills are included for natural-language querying in Claude Code sessions:
 
 - `skills/gtm/SKILL.md` — query GTM data
-- `skills/docs/SKILL.md` — query Google Docs content
+- `skills/google-docs/SKILL.md` — query Google Docs content
 
 To install:
 
 ```bash
-mkdir -p ~/.claude/skills/gtm ~/.claude/skills/docs
+mkdir -p ~/.claude/skills/gtm ~/.claude/skills/google-docs
 cp skills/gtm/SKILL.md ~/.claude/skills/gtm/SKILL.md
-cp skills/docs/SKILL.md ~/.claude/skills/docs/SKILL.md
+cp skills/google-docs/SKILL.md ~/.claude/skills/google-docs/SKILL.md
 ```
