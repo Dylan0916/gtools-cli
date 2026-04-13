@@ -75,7 +75,7 @@ async function run(): Promise<void> {
 
   if (!args.command) {
     console.log(JSON.stringify({
-      error: 'No command provided. Available: login, list-accounts, list-containers, list-tags, list-triggers, list-variables, list-templates, get-tag, get-trigger, get-variable, get-template, search',
+      error: 'No command provided. Run `gtools-cli <command>`. Available: login, list-accounts, list-containers, list-tags, list-triggers, list-variables, list-templates, get-tag, get-trigger, get-variable, get-template, search',
     }));
     process.exit(1);
   }

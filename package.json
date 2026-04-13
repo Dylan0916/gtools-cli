@@ -1,5 +1,5 @@
 {
-  "name": "gtm-cli",
+  "name": "gtools-cli",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,7 @@
     "test": "bun test"
   },
   "bin": {
-    "gtm-cli": "src/gtm.ts"
+    "gtools-cli": "src/gtm.ts"
   },
   "dependencies": {
     "googleapis": "^171.4.0"

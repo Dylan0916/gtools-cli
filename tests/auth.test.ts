@@ -100,6 +100,6 @@ describe('getAuthClient', () => {
 
     expect(exitCode).toBe(1);
     const parsed = JSON.parse(errorOutput);
-    expect(parsed.error).toContain('gtm-cli login');
+    expect(parsed.error).toContain('gtools-cli login');
   });
 });

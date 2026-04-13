@@ -1,8 +1,8 @@
-# gtm-cli
+# gtools-cli
 
-A command-line tool for querying Google Tag Manager (GTM) data — containers, tags, triggers, variables, and custom templates.
+A command-line tool for interacting with Google services. Currently supports Google Tag Manager (GTM) — containers, tags, triggers, variables, and custom templates.
 
-Built with [Bun](https://bun.sh) and the GTM API v2.
+Built with [Bun](https://bun.sh) and the Google APIs.
 
 ## Requirements
 
@@ -15,8 +15,8 @@ Built with [Bun](https://bun.sh) and the GTM API v2.
 **1. Clone and install dependencies**
 
 ```bash
-git clone https://github.com/your-username/gtm-cli.git
-cd gtm-cli
+git clone https://github.com/Dylan0916/gtools-cli.git
+cd gtools-cli
 bun install
 ```
 
@@ -35,12 +35,12 @@ source ~/.zshrc
 bun link
 ```
 
-After this, `gtm-cli` is available anywhere in your terminal.
+After this, `gtools-cli` is available anywhere in your terminal.
 
 ## Usage
 
 ```bash
-gtm-cli <command> [flags]
+gtools-cli <command> [flags]
 ```
 
 All output is JSON. `--account` takes the numeric accountId and `--container` takes the numeric containerId (not the `GTM-XXXXXX` public ID). Run `list-accounts` → `list-containers` first to get these IDs.
@@ -65,20 +65,20 @@ All output is JSON. `--account` takes the numeric accountId and `--container` ta
 
 ```bash
 # Find your account and container IDs
-gtm-cli list-accounts
-gtm-cli list-containers --account 123456789
+gtools-cli list-accounts
+gtools-cli list-containers --account 123456789
 
 # List all tags
-gtm-cli list-tags --account 123456789 --container 987654321
+gtools-cli list-tags --account 123456789 --container 987654321
 
 # Get full tag details
-gtm-cli get-tag --account 123456789 --container 987654321 --id 42
+gtools-cli get-tag --account 123456789 --container 987654321 --id 42
 
 # Search for purchase-related items
-gtm-cli search --account 123456789 --container 987654321 --query purchase
+gtools-cli search --account 123456789 --container 987654321 --query purchase
 
 # Get custom template source code
-gtm-cli get-template --account 123456789 --container 987654321 --id 26
+gtools-cli get-template --account 123456789 --container 987654321 --id 26
 ```
 
 ## Development

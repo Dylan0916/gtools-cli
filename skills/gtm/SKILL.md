@@ -19,10 +19,10 @@ source ~/.zshrc
 ## How to Run
 
 ```bash
-gtm-cli <command> [flags]
+gtools-cli <command> [flags]
 ```
 
-This relies on `GOOGLE_APPLICATION_CREDENTIALS` being set in the environment (see Prerequisites above). If `gtm-cli` is not found, run `bun link` inside the repo directory first.
+This relies on `GOOGLE_APPLICATION_CREDENTIALS` being set in the environment (see Prerequisites above). If `gtools-cli` is not found, run `bun link` inside the repo directory first.
 
 ## Available Commands
 

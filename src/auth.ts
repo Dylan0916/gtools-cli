@@ -31,7 +31,7 @@ export function getAuthClient(): AuthClient {
   if (!tokens) {
     console.error(
       JSON.stringify({
-        error: 'Not logged in. Run `gtm-cli login` first.',
+        error: 'Not logged in. Run `gtools-cli login` first.',
       })
     );
     process.exit(1);
