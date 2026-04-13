@@ -39,6 +39,8 @@ Required OAuth scopes (requested automatically on login):
 
 **3. Register as a global command**
 
+Run this inside the `gtools-cli` directory (from step 1):
+
 ```bash
 bun link
 ```
