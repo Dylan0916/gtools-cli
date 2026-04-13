@@ -6,6 +6,7 @@ import { runGetTag, runGetTrigger, runGetVariable } from './commands/get';
 import { runListAccounts, runListContainers, runListTags, runListTriggers, runListVariables } from './commands/list';
 import { runSearch } from './commands/search';
 import { runGetTemplate, runListTemplates } from './commands/template';
+import { runUpdateTagHtml } from './commands/update';
 
 // Commands that need only --account
 const ACCOUNT_COMMANDS = ['list-containers'];
@@ -13,8 +14,16 @@ const ACCOUNT_COMMANDS = ['list-containers'];
 const CONTAINER_COMMANDS = ['list-tags', 'list-triggers', 'list-variables', 'list-templates', 'search'];
 // Commands that need --account + --container + --id
 const ID_COMMANDS = ['get-tag', 'get-trigger', 'get-variable', 'get-template'];
+// Commands that need --account + --container + --id + --html-file
+const HTML_FILE_COMMANDS = ['update-tag-html'];
 
-const ALL_COMMANDS = ['list-accounts', ...ACCOUNT_COMMANDS, ...CONTAINER_COMMANDS, ...ID_COMMANDS];
+const ALL_COMMANDS = [
+  'list-accounts',
+  ...ACCOUNT_COMMANDS,
+  ...CONTAINER_COMMANDS,
+  ...ID_COMMANDS,
+  ...HTML_FILE_COMMANDS,
+];
 
 export function validateGtmArgs(args: ParsedArgs): string | null {
   if (!args.command) {
@@ -38,7 +47,7 @@ export function validateGtmArgs(args: ParsedArgs): string | null {
     }
   }
 
-  if (ID_COMMANDS.includes(args.command)) {
+  if (ID_COMMANDS.includes(args.command) || HTML_FILE_COMMANDS.includes(args.command)) {
     if (!args.account) {
       return `Command "gtm ${args.command}" requires --account <accountId>`;
     }
@@ -48,6 +57,10 @@ export function validateGtmArgs(args: ParsedArgs): string | null {
     if (!args.id) {
       return `Command "gtm ${args.command}" requires --id <resourceId>`;
     }
+  }
+
+  if (HTML_FILE_COMMANDS.includes(args.command) && !args.htmlFile) {
+    return `Command "gtm ${args.command}" requires --html-file <path>`;
   }
 
   return null;
@@ -80,6 +93,8 @@ export async function routeGtm(auth: AuthClient, args: ParsedArgs): Promise<Comm
         return { error: 'Command "gtm search" requires --query <keyword>' };
       }
       return runSearch(auth, args.account!, args.container!, args.query);
+    case 'update-tag-html':
+      return runUpdateTagHtml(auth, args.account!, args.container!, args.id!, args.htmlFile!);
     default:
       return { error: `Unknown GTM command: "${args.command}"` };
   }

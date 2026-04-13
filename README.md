@@ -80,6 +80,7 @@ All output is JSON. Top-level commands (`login`) don't require a service prefix.
 | `gtm get-variable` | `--account <id> --container <id> --id <variableId>` | Full variable details |
 | `gtm get-template` | `--account <id> --container <id> --id <templateId>` | Full template details including source code |
 | `gtm search` | `--account <id> --container <id> --query <keyword>` | Search tags, triggers, and variables by keyword |
+| `gtm update-tag-html` | `--account <id> --container <id> --id <tagId> --html-file <path>` | Update an HTML tag's `html` parameter from a file |
 
 ### Docs Commands
 
@@ -114,6 +115,9 @@ gtools-cli gtm search --account 123456789 --container 987654321 --query purchase
 
 # Get custom template source code
 gtools-cli gtm get-template --account 123456789 --container 987654321 --id 26
+
+# Update an HTML tag's html content (the file's content is uploaded as-is)
+gtools-cli gtm update-tag-html --account 123456789 --container 987654321 --id 42 --html-file ./new-tag.html
 
 # --- Docs ---
 

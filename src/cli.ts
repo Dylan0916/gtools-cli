@@ -15,6 +15,7 @@ export interface ParsedArgs {
   container?: string;
   id?: string;
   query?: string;
+  htmlFile?: string;
 }
 
 export function parseCliArgs(argv: string[]): ParsedArgs & { error?: string } {
@@ -45,6 +46,8 @@ export function parseCliArgs(argv: string[]): ParsedArgs & { error?: string } {
       result.id = argv[++i];
     } else if (argv[i] === '--query' && argv[i + 1]) {
       result.query = argv[++i];
+    } else if (argv[i] === '--html-file' && argv[i + 1]) {
+      result.htmlFile = argv[++i];
     }
   }
 

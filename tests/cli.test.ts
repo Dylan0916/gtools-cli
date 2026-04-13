@@ -25,6 +25,24 @@ describe('parseCliArgs', () => {
       expect(args.command).toBe('get-tag');
       expect(args.id).toBe('10');
     });
+
+    it('parses --html-file flag', () => {
+      const args = parseCliArgs([
+        'gtm',
+        'update-tag-html',
+        '--account',
+        '111',
+        '--container',
+        '222',
+        '--id',
+        '10',
+        '--html-file',
+        '/tmp/tag.html',
+      ]);
+      expect(args.service).toBe('gtm');
+      expect(args.command).toBe('update-tag-html');
+      expect(args.htmlFile).toBe('/tmp/tag.html');
+    });
   });
 
   describe('Docs subcommands', () => {
