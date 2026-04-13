@@ -1,5 +1,5 @@
 import { describe, it, expect, mock } from 'bun:test';
-import type { GtmTemplate, GtmTemplateDetail } from '../../src/types';
+import type { GtmTemplate, GtmTemplateDetail } from '../../../../src/services/gtm/types';
 
 const mockListTemplates = mock(async (): Promise<GtmTemplate[]> => [
   { templateId: '26', name: 'My Custom Template' },
@@ -11,13 +11,13 @@ const mockGetTemplate = mock(async (): Promise<GtmTemplateDetail> => ({
 }));
 const mockGetFirstWorkspaceId = mock(async (): Promise<string> => '1');
 
-mock.module('../../src/gtmClient', () => ({
+mock.module('../../../../src/services/gtm/client', () => ({
   listTemplates: mockListTemplates,
   getTemplate: mockGetTemplate,
   getFirstWorkspaceId: mockGetFirstWorkspaceId,
 }));
 
-const { runListTemplates, runGetTemplate } = await import('../../src/commands/template');
+const { runListTemplates, runGetTemplate } = await import('../../../../src/services/gtm/commands/template');
 
 describe('runListTemplates', () => {
   it('returns list of templates', async () => {

@@ -1,6 +1,6 @@
-import { getFirstWorkspaceId, getTemplate, listTemplates } from '../gtmClient';
-import type { AuthClient } from '../auth';
-import type { CommandResult } from '../types';
+import { getFirstWorkspaceId, getTemplate, listTemplates } from '../client';
+import type { AuthClient } from '../../../auth';
+import type { CommandResult } from '../../../types';
 
 export async function runListTemplates(
   auth: AuthClient,

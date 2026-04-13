@@ -1,5 +1,5 @@
 import { describe, it, expect, mock } from 'bun:test';
-import type { GtmTag, GtmTrigger, GtmVariable } from '../../src/types';
+import type { GtmTag, GtmTrigger, GtmVariable } from '../../../../src/services/gtm/types';
 
 const mockGetFirstWorkspaceId = mock(async (): Promise<string> => '1');
 const mockListTags = mock(async (): Promise<GtmTag[]> => [
@@ -13,14 +13,14 @@ const mockListVariables = mock(async (): Promise<GtmVariable[]> => [
   { variableId: '30', name: 'DL - purchaseAmount', type: 'v' },
 ]);
 
-mock.module('../../src/gtmClient', () => ({
+mock.module('../../../../src/services/gtm/client', () => ({
   getFirstWorkspaceId: mockGetFirstWorkspaceId,
   listTags: mockListTags,
   listTriggers: mockListTriggers,
   listVariables: mockListVariables,
 }));
 
-const { runSearch } = await import('../../src/commands/search');
+const { runSearch } = await import('../../../../src/services/gtm/commands/search');
 
 describe('runSearch', () => {
   it('returns matching tags, triggers, and variables case-insensitively', async () => {

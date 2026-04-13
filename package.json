@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "bun run src/gtm.ts",
+    "start": "bun run src/cli.ts",
     "test": "bun test"
   },
   "bin": {
-    "gtools-cli": "src/gtm.ts"
+    "gtools-cli": "src/cli.ts"
   },
   "dependencies": {
     "googleapis": "^171.4.0"

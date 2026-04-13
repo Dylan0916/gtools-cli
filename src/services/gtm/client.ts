@@ -11,7 +11,7 @@ import type {
   GtmVariable,
   GtmVariableDetail,
 } from './types';
-import type { AuthClient } from './auth';
+import type { AuthClient } from '../../auth';
 
 const tagmanager = google.tagmanager('v2');
 

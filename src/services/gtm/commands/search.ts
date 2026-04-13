@@ -1,6 +1,7 @@
-import { getFirstWorkspaceId, listTags, listTriggers, listVariables } from '../gtmClient';
-import type { AuthClient } from '../auth';
-import type { CommandResult, SearchResult } from '../types';
+import { getFirstWorkspaceId, listTags, listTriggers, listVariables } from '../client';
+import type { AuthClient } from '../../../auth';
+import type { CommandResult } from '../../../types';
+import type { SearchResult } from '../types';
 
 export async function runSearch(
   auth: AuthClient,

@@ -5,7 +5,7 @@ export async function runLogin(): Promise<void> {
   try {
     const tokens = await runLoginFlow();
     saveTokens(tokens);
-    console.log('Successfully logged in to Google Tag Manager.');
+    console.log('Successfully logged in to Google services.');
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(JSON.stringify({ error: `Login failed: ${message}` }));
