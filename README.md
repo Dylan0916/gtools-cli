@@ -143,6 +143,7 @@ src/
   config.ts              # Scopes, paths, OAuth config
   types.ts               # Shared CommandResult union
   commands/login.ts      # Top-level login command
+  commands/install.ts    # Install skills command
   services/
     gtm/                 # Google Tag Manager service
       router.ts, client.ts, types.ts, commands/
@@ -159,10 +160,12 @@ Two skills are included for natural-language querying in Claude Code sessions:
 - `skills/gtm/SKILL.md` — query GTM data
 - `skills/google-docs/SKILL.md` — query Google Docs content
 
-To install:
+To install, run the interactive installer:
 
 ```bash
-mkdir -p ~/.claude/skills/gtm ~/.claude/skills/google-docs
-cp skills/gtm/SKILL.md ~/.claude/skills/gtm/SKILL.md
-cp skills/google-docs/SKILL.md ~/.claude/skills/google-docs/SKILL.md
+gtools-cli install --skills
 ```
+
+It will ask you:
+1. **Scope** — current project or global (`~/`)
+2. **Target** — `.claude/skills`, `.agents/skills`, or a custom path

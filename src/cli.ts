@@ -1,12 +1,13 @@
 #!/usr/bin/env bun
 import { getAuthClient } from './auth';
 import { runLogin } from './commands/login';
+import { runInstallSkills } from './commands/install';
 import { validateGtmArgs, routeGtm } from './services/gtm/router';
 import { validateDocsArgs, routeDocs } from './services/docs/router';
 import type { CommandResult } from './types';
 
 const SERVICES = ['gtm', 'docs'];
-const TOP_LEVEL_COMMANDS = ['login'];
+const TOP_LEVEL_COMMANDS = ['login', 'install'];
 
 export interface ParsedArgs {
   service?: string;
@@ -16,6 +17,7 @@ export interface ParsedArgs {
   id?: string;
   query?: string;
   htmlFile?: string;
+  skills?: boolean;
 }
 
 export function parseCliArgs(argv: string[]): ParsedArgs & { error?: string } {
@@ -48,6 +50,8 @@ export function parseCliArgs(argv: string[]): ParsedArgs & { error?: string } {
       result.query = argv[++i];
     } else if (argv[i] === '--html-file' && argv[i + 1]) {
       result.htmlFile = argv[++i];
+    } else if (argv[i] === '--skills') {
+      result.skills = true;
     }
   }
 
@@ -57,7 +61,8 @@ export function parseCliArgs(argv: string[]): ParsedArgs & { error?: string } {
 function buildUsageError(): string {
   return 'No command provided. Usage: gtools-cli <service> <command>\n' +
     `  Services: ${SERVICES.join(', ')}\n` +
-    `  Top-level: ${TOP_LEVEL_COMMANDS.join(', ')}`;
+    `  Top-level: ${TOP_LEVEL_COMMANDS.join(', ')}\n` +
+    '  Skills:    gtools-cli install --skills';
 }
 
 async function run(): Promise<void> {
@@ -73,6 +78,16 @@ async function run(): Promise<void> {
   if (!args.service) {
     if (args.command === 'login') {
       await runLogin();
+      return;
+    }
+
+    if (args.command === 'install') {
+      if (args.skills) {
+        await runInstallSkills();
+      } else {
+        console.log(JSON.stringify({ error: 'Usage: gtools-cli install --skills' }));
+        process.exit(1);
+      }
       return;
     }
 
