@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 import type {
   GtmAccount,
+  GtmBuiltInVariable,
   GtmContainer,
   GtmTag,
   GtmTagDetail,
@@ -10,6 +11,8 @@ import type {
   GtmTriggerDetail,
   GtmVariable,
   GtmVariableDetail,
+  GtmVersionDetail,
+  GtmVersionHeader,
 } from './types';
 import type { AuthClient } from '../../auth';
 
@@ -104,19 +107,100 @@ export async function listVariables(
   }));
 }
 
+// Drop fields that are server-assigned or tied to the source container; pass everything else
+// through. GTM resources have lots of type-specific fields (customEventFilter, waitForTags,
+// scroll percentages, list/map parameter values, etc.) and lossy mapping previously caused
+// create-* calls to fail for customEvent triggers and tags with non-template parameters.
+const DISPLAY_STRIP_FIELDS = [
+  'path',
+  'accountId',
+  'containerId',
+  'workspaceId',
+  'fingerprint',
+  'parentFolderId',
+] as const;
+
+function stripForDisplay<T extends Record<string, unknown>>(raw: T): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (!DISPLAY_STRIP_FIELDS.includes(k as (typeof DISPLAY_STRIP_FIELDS)[number])) {
+      out[k] = v;
+    }
+  }
+  return out;
+}
+
 function mapTagDetail(t: any): GtmTagDetail {
   return {
+    ...stripForDisplay(t),
     tagId: t.tagId!,
     name: t.name!,
     type: t.type!,
     paused: t.paused ?? false,
     firingTriggerId: t.firingTriggerId ?? [],
     blockingTriggerId: t.blockingTriggerId ?? [],
-    parameter: (t.parameter ?? []).map((p: any) => ({
-      type: p.type!,
-      key: p.key!,
-      value: p.value ?? undefined,
-    })),
+    parameter: t.parameter ?? [],
+  } as GtmTagDetail;
+}
+
+function mapTriggerDetail(t: any): GtmTriggerDetail {
+  return {
+    ...stripForDisplay(t),
+    triggerId: t.triggerId!,
+    name: t.name!,
+    type: t.type!,
+  } as GtmTriggerDetail;
+}
+
+function mapVariableDetail(v: any): GtmVariableDetail {
+  return {
+    ...stripForDisplay(v),
+    variableId: v.variableId!,
+    name: v.name!,
+    type: v.type!,
+    parameter: v.parameter ?? [],
+  } as GtmVariableDetail;
+}
+
+function mapTemplateDetail(t: any): GtmTemplateDetail {
+  return {
+    templateId: t.templateId!,
+    name: t.name!,
+    templateData: t.templateData ?? '',
+  };
+}
+
+function mapBuiltInVariable(b: any): GtmBuiltInVariable {
+  return {
+    name: b.name!,
+    type: b.type!,
+  };
+}
+
+function mapVersionHeader(v: any): GtmVersionHeader {
+  return {
+    containerVersionId: v.containerVersionId!,
+    name: v.name ?? '',
+    description: v.description ?? undefined,
+    deleted: v.deleted ?? false,
+    numTags: v.numTags ?? undefined,
+    numTriggers: v.numTriggers ?? undefined,
+    numVariables: v.numVariables ?? undefined,
+    numCustomTemplates: v.numCustomTemplates ?? undefined,
+  };
+}
+
+function mapVersionDetail(v: any): GtmVersionDetail {
+  return {
+    containerVersionId: v.containerVersionId!,
+    name: v.name ?? '',
+    description: v.description ?? undefined,
+    deleted: v.deleted ?? false,
+    tag: (v.tag ?? []).map(mapTagDetail),
+    trigger: (v.trigger ?? []).map(mapTriggerDetail),
+    variable: (v.variable ?? []).map(mapVariableDetail),
+    template: (v.customTemplate ?? []).map(mapTemplateDetail),
+    builtInVariable: (v.builtInVariable ?? []).map(mapBuiltInVariable),
   };
 }
 
@@ -181,20 +265,7 @@ export async function getTrigger(
     auth,
     path: `accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/triggers/${triggerId}`,
   });
-  const t = res.data;
-  return {
-    triggerId: t.triggerId!,
-    name: t.name!,
-    type: t.type!,
-    filter: (t.filter ?? []).map((f) => ({
-      type: f.type!,
-      parameter: (f.parameter ?? []).map((p) => ({
-        type: p.type!,
-        key: p.key!,
-        value: p.value ?? undefined,
-      })),
-    })),
-  };
+  return mapTriggerDetail(res.data);
 }
 
 export async function listTemplates(
@@ -224,12 +295,7 @@ export async function getTemplate(
     auth,
     path: `accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/templates/${templateId}`,
   });
-  const t = res.data;
-  return {
-    templateId: t.templateId!,
-    name: t.name!,
-    templateData: t.templateData ?? '',
-  };
+  return mapTemplateDetail(res.data);
 }
 
 export async function getVariable(
@@ -243,15 +309,141 @@ export async function getVariable(
     auth,
     path: `accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/variables/${variableId}`,
   });
-  const v = res.data;
-  return {
-    variableId: v.variableId!,
-    name: v.name!,
-    type: v.type!,
-    parameter: (v.parameter ?? []).map((p) => ({
-      type: p.type!,
-      key: p.key!,
-      value: p.value ?? undefined,
-    })),
-  };
+  return mapVariableDetail(res.data);
+}
+
+// Fields assigned by GTM on creation or tied to the source location. Stripping them lets a payload
+// pulled from one container be posted into another container's workspace without server errors or
+// surprising cross-container references.
+const READ_ONLY_FIELDS = [
+  'path',
+  'accountId',
+  'containerId',
+  'workspaceId',
+  'fingerprint',
+  'tagId',
+  'triggerId',
+  'variableId',
+  'templateId',
+  'parentFolderId',
+  'tagManagerUrl',
+] as const;
+
+function stripForCreate(payload: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(payload)) {
+    if (!READ_ONLY_FIELDS.includes(k as (typeof READ_ONLY_FIELDS)[number])) {
+      out[k] = v;
+    }
+  }
+  return out;
+}
+
+export async function createTag(
+  auth: AuthClient,
+  accountId: string,
+  containerId: string,
+  workspaceId: string,
+  payload: Record<string, unknown>
+): Promise<GtmTagDetail> {
+  const res = await tagmanager.accounts.containers.workspaces.tags.create({
+    auth,
+    parent: `accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}`,
+    requestBody: stripForCreate(payload),
+  });
+  return mapTagDetail(res.data);
+}
+
+export async function createTrigger(
+  auth: AuthClient,
+  accountId: string,
+  containerId: string,
+  workspaceId: string,
+  payload: Record<string, unknown>
+): Promise<GtmTriggerDetail> {
+  const res = await tagmanager.accounts.containers.workspaces.triggers.create({
+    auth,
+    parent: `accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}`,
+    requestBody: stripForCreate(payload),
+  });
+  return mapTriggerDetail(res.data);
+}
+
+export async function createVariable(
+  auth: AuthClient,
+  accountId: string,
+  containerId: string,
+  workspaceId: string,
+  payload: Record<string, unknown>
+): Promise<GtmVariableDetail> {
+  const res = await tagmanager.accounts.containers.workspaces.variables.create({
+    auth,
+    parent: `accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}`,
+    requestBody: stripForCreate(payload),
+  });
+  return mapVariableDetail(res.data);
+}
+
+// Replaces only the `parameter` array of an existing variable — mirrors the conservative
+// update-tag-html pattern: read current, merge the one field we care about, write back.
+export async function updateVariable(
+  auth: AuthClient,
+  accountId: string,
+  containerId: string,
+  workspaceId: string,
+  variableId: string,
+  newParameters: Array<{ type: string; key: string; value?: string }>
+): Promise<GtmVariableDetail> {
+  const basePath = `accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}/variables/${variableId}`;
+  const current = await tagmanager.accounts.containers.workspaces.variables.get({ auth, path: basePath });
+  const res = await tagmanager.accounts.containers.workspaces.variables.update({
+    auth,
+    path: basePath,
+    requestBody: { ...current.data, parameter: newParameters },
+  });
+  return mapVariableDetail(res.data);
+}
+
+export async function listVersionHeaders(
+  auth: AuthClient,
+  accountId: string,
+  containerId: string
+): Promise<GtmVersionHeader[]> {
+  const headers: any[] = [];
+  let pageToken: string | undefined;
+  do {
+    const res: any = await tagmanager.accounts.containers.version_headers.list({
+      auth,
+      parent: `accounts/${accountId}/containers/${containerId}`,
+      ...(pageToken ? { pageToken } : {}),
+    });
+    headers.push(...(res.data.containerVersionHeader ?? []));
+    pageToken = res.data.nextPageToken ?? undefined;
+  } while (pageToken);
+  return headers.map(mapVersionHeader);
+}
+
+export async function getVersion(
+  auth: AuthClient,
+  accountId: string,
+  containerId: string,
+  versionId: string
+): Promise<GtmVersionDetail> {
+  const res = await tagmanager.accounts.containers.versions.get({
+    auth,
+    path: `accounts/${accountId}/containers/${containerId}/versions/${versionId}`,
+  });
+  return mapVersionDetail(res.data);
+}
+
+export async function getLiveVersion(
+  auth: AuthClient,
+  accountId: string,
+  containerId: string
+): Promise<GtmVersionDetail> {
+  const res = await tagmanager.accounts.containers.versions.live({
+    auth,
+    parent: `accounts/${accountId}/containers/${containerId}`,
+  });
+  return mapVersionDetail(res.data);
 }

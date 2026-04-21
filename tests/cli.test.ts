@@ -43,6 +43,77 @@ describe('parseCliArgs', () => {
       expect(args.command).toBe('update-tag-html');
       expect(args.htmlFile).toBe('/tmp/tag.html');
     });
+
+    it('parses --from-version and --to-version for diff-versions', () => {
+      const args = parseCliArgs([
+        'gtm',
+        'diff-versions',
+        '--account',
+        '111',
+        '--container',
+        '222',
+        '--from-version',
+        '28',
+        '--to-version',
+        '31',
+      ]);
+      expect(args.command).toBe('diff-versions');
+      expect(args.fromVersion).toBe('28');
+      expect(args.toVersion).toBe('31');
+    });
+
+    it('parses --from-account / --to-account / --from-container / --to-container for diff-containers', () => {
+      const args = parseCliArgs([
+        'gtm',
+        'diff-containers',
+        '--from-account',
+        '111',
+        '--from-container',
+        'A',
+        '--to-account',
+        '222',
+        '--to-container',
+        'B',
+      ]);
+      expect(args.command).toBe('diff-containers');
+      expect(args.fromAccount).toBe('111');
+      expect(args.toAccount).toBe('222');
+      expect(args.fromContainer).toBe('A');
+      expect(args.toContainer).toBe('B');
+    });
+
+    it('parses --from-file flag for create commands', () => {
+      const args = parseCliArgs([
+        'gtm',
+        'create-tag',
+        '--account',
+        '111',
+        '--container',
+        '222',
+        '--from-file',
+        '/tmp/tag.json',
+      ]);
+      expect(args.command).toBe('create-tag');
+      expect(args.fromFile).toBe('/tmp/tag.json');
+    });
+
+    it('parses --from-file flag for update-variable', () => {
+      const args = parseCliArgs([
+        'gtm',
+        'update-variable',
+        '--account',
+        '111',
+        '--container',
+        '222',
+        '--id',
+        '27',
+        '--from-file',
+        '/tmp/var.json',
+      ]);
+      expect(args.command).toBe('update-variable');
+      expect(args.id).toBe('27');
+      expect(args.fromFile).toBe('/tmp/var.json');
+    });
   });
 
   describe('Docs subcommands', () => {

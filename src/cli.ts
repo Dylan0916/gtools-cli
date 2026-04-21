@@ -18,6 +18,13 @@ export interface ParsedArgs {
   query?: string;
   htmlFile?: string;
   skills?: boolean;
+  fromVersion?: string;
+  toVersion?: string;
+  fromAccount?: string;
+  toAccount?: string;
+  fromContainer?: string;
+  toContainer?: string;
+  fromFile?: string;
 }
 
 export function parseCliArgs(argv: string[]): ParsedArgs & { error?: string } {
@@ -50,6 +57,20 @@ export function parseCliArgs(argv: string[]): ParsedArgs & { error?: string } {
       result.query = argv[++i];
     } else if (argv[i] === '--html-file' && argv[i + 1]) {
       result.htmlFile = argv[++i];
+    } else if (argv[i] === '--from-version' && argv[i + 1]) {
+      result.fromVersion = argv[++i];
+    } else if (argv[i] === '--to-version' && argv[i + 1]) {
+      result.toVersion = argv[++i];
+    } else if (argv[i] === '--from-account' && argv[i + 1]) {
+      result.fromAccount = argv[++i];
+    } else if (argv[i] === '--to-account' && argv[i + 1]) {
+      result.toAccount = argv[++i];
+    } else if (argv[i] === '--from-container' && argv[i + 1]) {
+      result.fromContainer = argv[++i];
+    } else if (argv[i] === '--to-container' && argv[i + 1]) {
+      result.toContainer = argv[++i];
+    } else if (argv[i] === '--from-file' && argv[i + 1]) {
+      result.fromFile = argv[++i];
     } else if (argv[i] === '--skills') {
       result.skills = true;
     }

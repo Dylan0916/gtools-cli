@@ -81,6 +81,15 @@ All output is JSON. Top-level commands (`login`) don't require a service prefix.
 | `gtm get-template` | `--account <id> --container <id> --id <templateId>` | Full template details including source code |
 | `gtm search` | `--account <id> --container <id> --query <keyword>` | Search tags, triggers, and variables by keyword |
 | `gtm update-tag-html` | `--account <id> --container <id> --id <tagId> --html-file <path>` | Update an HTML tag's `html` parameter from a file |
+| `gtm list-versions` | `--account <id> --container <id>` | List all container versions (published + drafts) |
+| `gtm get-version` | `--account <id> --container <id> --id <versionId>` | Full snapshot of a version (tags/triggers/variables/templates/builtInVariables) |
+| `gtm get-live-version` | `--account <id> --container <id>` | Full snapshot of the currently published version |
+| `gtm diff-versions` | `--account <id> --container <id> --from-version <id> --to-version <id>` | Diff two versions in the same container (matched by resource ID). Output: `added` / `removed` / `modified` with field-level diff |
+| `gtm diff-containers` | `--from-account <id> --from-container <id> --to-account <id> --to-container <id>` | Diff the live versions of two containers (matched by resource name). `--account` may be used as a shared default if both containers live in the same account |
+| `gtm create-tag` | `--account <id> --container <id> --from-file <path>` | Create a tag from a JSON file (accepts raw tag object or the wrapped `{tag: ...}` format emitted by `get-tag`) |
+| `gtm create-trigger` | `--account <id> --container <id> --from-file <path>` | Create a trigger from a JSON file (raw trigger object or `{trigger: ...}`) |
+| `gtm create-variable` | `--account <id> --container <id> --from-file <path>` | Create a variable from a JSON file (raw variable object or `{variable: ...}`) |
+| `gtm update-variable` | `--account <id> --container <id> --id <variableId> --from-file <path>` | Replace an existing variable's `parameter` array with the one from a JSON file |
 
 ### Docs Commands
 
@@ -118,6 +127,28 @@ gtools-cli gtm get-template --account 123456789 --container 987654321 --id 26
 
 # Update an HTML tag's html content (the file's content is uploaded as-is)
 gtools-cli gtm update-tag-html --account 123456789 --container 987654321 --id 42 --html-file ./new-tag.html
+
+# List all versions in a container
+gtools-cli gtm list-versions --account 123456789 --container 987654321
+
+# Get a specific version's full snapshot
+gtools-cli gtm get-version --account 123456789 --container 987654321 --id 31
+
+# Diff two versions in the same container (e.g. what changed from v28 → v31)
+gtools-cli gtm diff-versions --account 123456789 --container 987654321 --from-version 28 --to-version 31
+
+# Diff the live versions of two containers (same account)
+gtools-cli gtm diff-containers --account 123456789 --from-container 987654321 --to-container 987654322
+
+# Copy a tag/trigger/variable from one container to another:
+#   1. Dump the source resource to a file
+gtools-cli gtm get-tag --account 123456789 --container 987654321 --id 42 > /tmp/src-tag.json
+#   2. Create it in the target container (--from-file accepts the whole `{tag: ...}` output)
+gtools-cli gtm create-tag --account 123456789 --container 987654322 --from-file /tmp/src-tag.json
+
+# Update a variable's parameter block (use get-variable output as input)
+gtools-cli gtm get-variable --account 123456789 --container 987654321 --id 27 > /tmp/src-var.json
+gtools-cli gtm update-variable --account 123456789 --container 987654322 --id 63 --from-file /tmp/src-var.json
 
 # --- Docs ---
 
