@@ -6,6 +6,7 @@ export const REDIRECT_URI = `http://localhost:${OAUTH_PORT}/callback`;
 export const SCOPES = [
   'https://www.googleapis.com/auth/tagmanager.edit.containers',
   'https://www.googleapis.com/auth/documents.readonly',
+  'https://www.googleapis.com/auth/spreadsheets.readonly',
 ];
 export const TOKEN_DIR = join(homedir(), '.config', 'gtools-cli');
 export const TOKEN_PATH = join(TOKEN_DIR, 'token.json');

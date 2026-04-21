@@ -125,6 +125,15 @@ describe('parseCliArgs', () => {
     });
   });
 
+  describe('Sheets subcommands', () => {
+    it('parses sheets get with --id', () => {
+      const args = parseCliArgs(['sheets', 'get', '--id', 'sheet-xyz']);
+      expect(args.service).toBe('sheets');
+      expect(args.command).toBe('get');
+      expect(args.id).toBe('sheet-xyz');
+    });
+  });
+
   describe('Top-level commands', () => {
     it('parses login as top-level command', () => {
       const args = parseCliArgs(['login']);

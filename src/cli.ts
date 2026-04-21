@@ -4,9 +4,10 @@ import { runLogin } from './commands/login';
 import { runInstallSkills } from './commands/install';
 import { validateGtmArgs, routeGtm } from './services/gtm/router';
 import { validateDocsArgs, routeDocs } from './services/docs/router';
+import { validateSheetsArgs, routeSheets } from './services/sheets/router';
 import type { CommandResult } from './types';
 
-const SERVICES = ['gtm', 'docs'];
+const SERVICES = ['gtm', 'docs', 'sheets'];
 const TOP_LEVEL_COMMANDS = ['login', 'install'];
 
 export interface ParsedArgs {
@@ -113,8 +114,9 @@ async function run(): Promise<void> {
     }
 
     // Unknown top-level command — maybe they forgot the service prefix
+    const serviceHints = SERVICES.map((s) => `"gtools-cli ${s} ${args.command}"`).join(' or ');
     console.log(JSON.stringify({
-      error: `Unknown command: "${args.command}". Did you mean "gtools-cli gtm ${args.command}" or "gtools-cli docs ${args.command}"?`,
+      error: `Unknown command: "${args.command}". Did you mean ${serviceHints}?`,
     }));
     process.exit(1);
   }
@@ -137,6 +139,14 @@ async function run(): Promise<void> {
       }
       break;
     }
+    case 'sheets': {
+      const validationError = validateSheetsArgs(args);
+      if (validationError) {
+        console.log(JSON.stringify({ error: validationError }));
+        process.exit(1);
+      }
+      break;
+    }
     default:
       console.log(JSON.stringify({ error: `Unknown service: "${args.service}"` }));
       process.exit(1);
@@ -152,6 +162,9 @@ async function run(): Promise<void> {
         break;
       case 'docs':
         result = await routeDocs(auth, args);
+        break;
+      case 'sheets':
+        result = await routeSheets(auth, args);
         break;
       default:
         result = { error: `Unknown service: "${args.service}"` };
