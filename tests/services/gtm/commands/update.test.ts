@@ -2,7 +2,8 @@ import { describe, it, expect, mock } from 'bun:test';
 import { writeFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import type { GtmTagDetail, GtmVariableDetail } from '../../../../src/services/gtm/types';
+
+import type { GtmTagDetail, GtmVariableDetail } from '@/services/gtm/types';
 
 const mockUpdateTagHtml = mock(async (): Promise<GtmTagDetail> => ({
   tagId: '42',
@@ -23,13 +24,13 @@ const mockUpdateVariable = mock(
 );
 const mockGetFirstWorkspaceId = mock(async (): Promise<string> => '1');
 
-mock.module('../../../../src/services/gtm/client', () => ({
+mock.module('@/services/gtm/client', () => ({
   updateTagHtml: mockUpdateTagHtml,
   updateVariable: mockUpdateVariable,
   getFirstWorkspaceId: mockGetFirstWorkspaceId,
 }));
 
-const { runUpdateTagHtml, runUpdateVariable } = await import('../../../../src/services/gtm/commands/update');
+const { runUpdateTagHtml, runUpdateVariable } = await import('@/services/gtm/commands/update');
 
 describe('runUpdateTagHtml', () => {
   it('reads html from file and calls updateTagHtml', async () => {

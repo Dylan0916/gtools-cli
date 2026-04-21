@@ -1,6 +1,6 @@
-import type { AuthClient } from '../../auth';
-import type { CommandResult } from '../../types';
-import type { ParsedArgs } from '../../cli';
+import type { AuthClient } from '@/auth';
+import type { CommandResult } from '@/types';
+import type { ParsedArgs } from '@/cli';
 
 import { runGetSpreadsheet } from './commands/get';
 

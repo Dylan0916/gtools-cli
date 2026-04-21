@@ -1,7 +1,7 @@
-import { getDocument } from '../client';
-import { extractPlainText } from '../extractText';
-import type { AuthClient } from '../../../auth';
-import type { CommandResult } from '../../../types';
+import { getDocument } from '@/services/docs/client';
+import { extractPlainText } from '@/services/docs/extractText';
+import type { AuthClient } from '@/auth';
+import type { CommandResult } from '@/types';
 
 export async function runGetDoc(
   auth: AuthClient,

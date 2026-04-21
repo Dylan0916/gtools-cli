@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+
 import type {
   GtmAccount,
   GtmBuiltInVariable,
@@ -14,7 +15,7 @@ import type {
   GtmVersionDetail,
   GtmVersionHeader,
 } from './types';
-import type { AuthClient } from '../../auth';
+import type { AuthClient } from '@/auth';
 
 const tagmanager = google.tagmanager('v2');
 

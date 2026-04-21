@@ -1,5 +1,6 @@
 import { describe, it, expect, mock } from 'bun:test';
-import type { GtmVersionDetail } from '../../../../src/services/gtm/types';
+
+import type { GtmVersionDetail } from '@/services/gtm/types';
 
 function makeVersion(overrides: Partial<GtmVersionDetail> = {}): GtmVersionDetail {
   return {
@@ -79,12 +80,12 @@ const mockGetLiveVersion = mock(async (_auth: unknown, _acc: string, containerId
   throw new Error(`Unexpected containerId: ${containerId}`);
 });
 
-mock.module('../../../../src/services/gtm/client', () => ({
+mock.module('@/services/gtm/client', () => ({
   getVersion: mockGetVersion,
   getLiveVersion: mockGetLiveVersion,
 }));
 
-const { runDiffVersions, runDiffContainers } = await import('../../../../src/services/gtm/commands/diff');
+const { runDiffVersions, runDiffContainers } = await import('@/services/gtm/commands/diff');
 
 describe('runDiffVersions', () => {
   it('fetches both versions in the same container and returns diff matched by id', async () => {

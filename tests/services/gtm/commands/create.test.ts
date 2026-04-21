@@ -2,7 +2,8 @@ import { describe, it, expect, mock } from 'bun:test';
 import { writeFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import type { GtmTagDetail, GtmTriggerDetail, GtmVariableDetail } from '../../../../src/services/gtm/types';
+
+import type { GtmTagDetail, GtmTriggerDetail, GtmVariableDetail } from '@/services/gtm/types';
 
 const mockGetFirstWorkspaceId = mock(async (): Promise<string> => '1');
 const mockCreateTag = mock(
@@ -41,7 +42,7 @@ const noop = mock(async () => {
   throw new Error('unexpected call');
 });
 
-mock.module('../../../../src/services/gtm/client', () => ({
+mock.module('@/services/gtm/client', () => ({
   getFirstWorkspaceId: mockGetFirstWorkspaceId,
   createTag: mockCreateTag,
   createTrigger: mockCreateTrigger,
@@ -63,7 +64,7 @@ mock.module('../../../../src/services/gtm/client', () => ({
   getLiveVersion: noop,
 }));
 
-const { runCreateTag, runCreateTrigger, runCreateVariable } = await import('../../../../src/services/gtm/commands/create');
+const { runCreateTag, runCreateTrigger, runCreateVariable } = await import('@/services/gtm/commands/create');
 
 function withJsonFile<T>(payload: unknown, fn: (path: string) => Promise<T>): Promise<T> {
   const tmpFile = join(tmpdir(), `gtools-create-test-${Date.now()}-${Math.random()}.json`);

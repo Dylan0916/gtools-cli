@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'bun:test';
-import { computeDiff } from '../../../src/services/gtm/diff';
-import type { GtmVersionDetail } from '../../../src/services/gtm/types';
+
+import { computeDiff } from '@/services/gtm/diff';
+import type { GtmVersionDetail } from '@/services/gtm/types';
 
 function makeVersion(overrides: Partial<GtmVersionDetail> = {}): GtmVersionDetail {
   return {

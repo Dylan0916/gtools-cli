@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'bun:test';
-import { extractPlainText } from '../../../src/services/docs/extractText';
 import type { docs_v1 } from 'googleapis';
+
+import { extractPlainText } from '@/services/docs/extractText';
 
 describe('extractPlainText', () => {
   it('extracts text from simple paragraphs', () => {

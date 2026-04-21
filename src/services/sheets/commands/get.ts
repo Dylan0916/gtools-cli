@@ -1,7 +1,7 @@
-import { getSpreadsheetMeta, batchGetValues } from '../client';
-import type { AuthClient } from '../../../auth';
-import type { CommandResult } from '../../../types';
-import type { SheetTab } from '../types';
+import { getSpreadsheetMeta, batchGetValues } from '@/services/sheets/client';
+import type { AuthClient } from '@/auth';
+import type { CommandResult } from '@/types';
+import type { SheetTab } from '@/services/sheets/types';
 
 export async function runGetSpreadsheet(
   auth: AuthClient,

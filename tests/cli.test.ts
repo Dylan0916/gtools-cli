@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 
-const { parseCliArgs } = await import('../src/cli');
+const { parseCliArgs } = await import('@/cli');
 
 describe('parseCliArgs', () => {
   describe('GTM subcommands', () => {

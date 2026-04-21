@@ -31,12 +31,12 @@ const mockBatchGetValues = mock(
   }),
 );
 
-mock.module('../../../../src/services/sheets/client', () => ({
+mock.module('@/services/sheets/client', () => ({
   getSpreadsheetMeta: mockGetSpreadsheetMeta,
   batchGetValues: mockBatchGetValues,
 }));
 
-const { runGetSpreadsheet } = await import('../../../../src/services/sheets/commands/get');
+const { runGetSpreadsheet } = await import('@/services/sheets/commands/get');
 
 describe('runGetSpreadsheet', () => {
   it('returns spreadsheet with all sheets and rows', async () => {

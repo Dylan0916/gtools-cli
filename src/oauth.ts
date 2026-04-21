@@ -1,6 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'http';
 import { spawn } from 'child_process';
 import { google } from 'googleapis';
+
 import { OAUTH_PORT, REDIRECT_URI, SCOPES } from './config';
 import type { StoredTokens } from './tokenStore';
 

@@ -1,7 +1,7 @@
-import { getVersion, getLiveVersion } from '../client';
-import { computeDiff } from '../diff';
-import type { AuthClient } from '../../../auth';
-import type { CommandResult } from '../../../types';
+import { getVersion, getLiveVersion } from '@/services/gtm/client';
+import { computeDiff } from '@/services/gtm/diff';
+import type { AuthClient } from '@/auth';
+import type { CommandResult } from '@/types';
 
 export async function runDiffVersions(
   auth: AuthClient,

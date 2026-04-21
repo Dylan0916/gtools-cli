@@ -1,5 +1,5 @@
-import { runLoginFlow } from '../oauth';
-import { saveTokens } from '../tokenStore';
+import { runLoginFlow } from '@/oauth';
+import { saveTokens } from '@/tokenStore';
 
 export async function runLogin(): Promise<void> {
   try {

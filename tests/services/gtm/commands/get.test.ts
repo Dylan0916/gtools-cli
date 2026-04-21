@@ -1,5 +1,6 @@
 import { describe, it, expect, mock } from 'bun:test';
-import type { GtmTagDetail, GtmTriggerDetail, GtmVariableDetail } from '../../../../src/services/gtm/types';
+
+import type { GtmTagDetail, GtmTriggerDetail, GtmVariableDetail } from '@/services/gtm/types';
 
 const mockGetTag = mock(async (): Promise<GtmTagDetail> => ({
   tagId: '10',
@@ -24,14 +25,14 @@ const mockGetVariable = mock(async (): Promise<GtmVariableDetail> => ({
 }));
 const mockGetFirstWorkspaceId = mock(async (): Promise<string> => '1');
 
-mock.module('../../../../src/services/gtm/client', () => ({
+mock.module('@/services/gtm/client', () => ({
   getTag: mockGetTag,
   getTrigger: mockGetTrigger,
   getVariable: mockGetVariable,
   getFirstWorkspaceId: mockGetFirstWorkspaceId,
 }));
 
-const { runGetTag, runGetTrigger, runGetVariable } = await import('../../../../src/services/gtm/commands/get');
+const { runGetTag, runGetTrigger, runGetVariable } = await import('@/services/gtm/commands/get');
 
 describe('runGetTag', () => {
   it('returns full tag detail', async () => {

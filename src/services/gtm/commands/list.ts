@@ -5,9 +5,9 @@ import {
   listTags,
   listTriggers,
   listVariables,
-} from '../client';
-import type { AuthClient } from '../../../auth';
-import type { CommandResult } from '../../../types';
+} from '@/services/gtm/client';
+import type { AuthClient } from '@/auth';
+import type { CommandResult } from '@/types';
 
 export async function runListAccounts(auth: AuthClient): Promise<CommandResult> {
   const accounts = await listAccounts(auth);

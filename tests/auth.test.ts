@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach, beforeEach } from 'bun:test';
 import { existsSync, unlinkSync, mkdirSync, writeFileSync } from 'fs';
-import { TOKEN_PATH, TOKEN_DIR } from '../src/config';
+
+import { TOKEN_PATH, TOKEN_DIR } from '@/config';
 
 describe('getAuthClient', () => {
   const originalClientId = process.env.GOOGLE_CLIENT_ID;
@@ -44,7 +45,7 @@ describe('getAuthClient', () => {
     process.env.GOOGLE_CLIENT_ID = 'test-client-id';
     process.env.GOOGLE_CLIENT_SECRET = 'test-client-secret';
 
-    const { getAuthClient } = await import('../src/auth');
+    const { getAuthClient } = await import('@/auth');
     const client = getAuthClient();
 
     expect(client).toBeDefined();
@@ -64,7 +65,7 @@ describe('getAuthClient', () => {
     process.exit = ((code: number) => { exitCode = code; }) as never;
     console.error = (msg: string) => { errorOutput = msg; };
 
-    const { getAuthClient } = await import('../src/auth');
+    const { getAuthClient } = await import('@/auth');
     getAuthClient();
 
     process.exit = originalExit;
@@ -92,7 +93,7 @@ describe('getAuthClient', () => {
     process.exit = ((code: number) => { exitCode = code; }) as never;
     console.error = (msg: string) => { errorOutput = msg; };
 
-    const { getAuthClient } = await import('../src/auth');
+    const { getAuthClient } = await import('@/auth');
     getAuthClient();
 
     process.exit = originalExit;

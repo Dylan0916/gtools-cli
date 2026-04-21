@@ -1,4 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+
 import { TOKEN_DIR, TOKEN_PATH } from './config';
 
 export interface StoredTokens {

@@ -1,5 +1,6 @@
 import { describe, it, expect, mock } from 'bun:test';
-import type { GtmAccount, GtmContainer, GtmTag, GtmTrigger, GtmVariable } from '../../../../src/services/gtm/types';
+
+import type { GtmAccount, GtmContainer, GtmTag, GtmTrigger, GtmVariable } from '@/services/gtm/types';
 
 const mockListAccounts = mock(async (): Promise<GtmAccount[]> => [
   { accountId: '111', name: 'My Account' },
@@ -18,7 +19,7 @@ const mockListVariables = mock(async (): Promise<GtmVariable[]> => [
   { variableId: '30', name: 'DL - transactionId', type: 'v' },
 ]);
 
-mock.module('../../../../src/services/gtm/client', () => ({
+mock.module('@/services/gtm/client', () => ({
   listAccounts: mockListAccounts,
   listContainers: mockListContainers,
   getFirstWorkspaceId: mockGetFirstWorkspaceId,
@@ -28,7 +29,7 @@ mock.module('../../../../src/services/gtm/client', () => ({
 }));
 
 const { runListAccounts, runListContainers, runListTags, runListTriggers, runListVariables } =
-  await import('../../../../src/services/gtm/commands/list');
+  await import('@/services/gtm/commands/list');
 
 describe('runListAccounts', () => {
   it('returns accounts array', async () => {

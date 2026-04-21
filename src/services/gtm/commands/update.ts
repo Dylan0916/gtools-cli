@@ -1,7 +1,8 @@
 import { readFile } from 'fs/promises';
-import { getFirstWorkspaceId, updateTagHtml, updateVariable } from '../client';
-import type { AuthClient } from '../../../auth';
-import type { CommandResult } from '../../../types';
+
+import { getFirstWorkspaceId, updateTagHtml, updateVariable } from '@/services/gtm/client';
+import type { AuthClient } from '@/auth';
+import type { CommandResult } from '@/types';
 
 export async function runUpdateTagHtml(
   auth: AuthClient,

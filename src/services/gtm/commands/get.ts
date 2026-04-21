@@ -1,6 +1,6 @@
-import { getFirstWorkspaceId, getTag, getTrigger, getVariable } from '../client';
-import type { AuthClient } from '../../../auth';
-import type { CommandResult } from '../../../types';
+import { getFirstWorkspaceId, getTag, getTrigger, getVariable } from '@/services/gtm/client';
+import type { AuthClient } from '@/auth';
+import type { CommandResult } from '@/types';
 
 export async function runGetTag(
   auth: AuthClient,

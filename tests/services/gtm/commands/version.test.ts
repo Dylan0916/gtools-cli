@@ -1,5 +1,6 @@
 import { describe, it, expect, mock } from 'bun:test';
-import type { GtmVersionDetail, GtmVersionHeader } from '../../../../src/services/gtm/types';
+
+import type { GtmVersionDetail, GtmVersionHeader } from '@/services/gtm/types';
 
 const sampleHeaders: GtmVersionHeader[] = [
   { containerVersionId: '31', name: 'Remove redundant log', deleted: false, numTags: '50' },
@@ -34,14 +35,14 @@ const mockListVersionHeaders = mock(async () => sampleHeaders);
 const mockGetVersion = mock(async () => sampleVersionDetail);
 const mockGetLiveVersion = mock(async () => sampleLiveVersion);
 
-mock.module('../../../../src/services/gtm/client', () => ({
+mock.module('@/services/gtm/client', () => ({
   listVersionHeaders: mockListVersionHeaders,
   getVersion: mockGetVersion,
   getLiveVersion: mockGetLiveVersion,
 }));
 
 const { runListVersions, runGetVersion, runGetLiveVersion } =
-  await import('../../../../src/services/gtm/commands/version');
+  await import('@/services/gtm/commands/version');
 
 describe('runListVersions', () => {
   it('returns version headers array', async () => {

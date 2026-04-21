@@ -1,7 +1,8 @@
 import { readFile } from 'fs/promises';
-import { createTag, createTrigger, createVariable, getFirstWorkspaceId } from '../client';
-import type { AuthClient } from '../../../auth';
-import type { CommandResult } from '../../../types';
+
+import { createTag, createTrigger, createVariable, getFirstWorkspaceId } from '@/services/gtm/client';
+import type { AuthClient } from '@/auth';
+import type { CommandResult } from '@/types';
 
 type WrapperKey = 'tag' | 'trigger' | 'variable';
 

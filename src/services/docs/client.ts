@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 import type { docs_v1 } from 'googleapis';
-import type { AuthClient } from '../../auth';
+
+import type { AuthClient } from '@/auth';
 
 const docs = google.docs('v1');
 

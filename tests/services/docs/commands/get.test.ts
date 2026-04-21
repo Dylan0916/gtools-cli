@@ -20,11 +20,11 @@ const mockGetDocument = mock(async (): Promise<docs_v1.Schema$Document> => ({
   },
 }));
 
-mock.module('../../../../src/services/docs/client', () => ({
+mock.module('@/services/docs/client', () => ({
   getDocument: mockGetDocument,
 }));
 
-const { runGetDoc } = await import('../../../../src/services/docs/commands/get');
+const { runGetDoc } = await import('@/services/docs/commands/get');
 
 describe('runGetDoc', () => {
   it('returns document with extracted plain text', async () => {

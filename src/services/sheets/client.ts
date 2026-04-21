@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 import type { sheets_v4 } from 'googleapis';
-import type { AuthClient } from '../../auth';
+
+import type { AuthClient } from '@/auth';
 
 const sheets = google.sheets('v4');
 

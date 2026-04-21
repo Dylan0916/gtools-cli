@@ -1,6 +1,6 @@
-import { listVersionHeaders, getVersion, getLiveVersion } from '../client';
-import type { AuthClient } from '../../../auth';
-import type { CommandResult } from '../../../types';
+import { listVersionHeaders, getVersion, getLiveVersion } from '@/services/gtm/client';
+import type { AuthClient } from '@/auth';
+import type { CommandResult } from '@/types';
 
 export async function runListVersions(
   auth: AuthClient,
