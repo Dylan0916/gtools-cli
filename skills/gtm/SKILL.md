@@ -79,7 +79,7 @@ Before writing or reviewing the HTML body's JavaScript, read `references/gtm-htm
 
 ## Example: Full Flow
 
-User: "FunNow 這個 container 有哪些跟 purchase 相關的 tag？"
+User: "我的網站這個 container 有哪些跟 purchase 相關的 tag？"
 
 Step 1 — find the account:
 ```bash
@@ -87,21 +87,21 @@ gtools-cli gtm list-accounts
 ```
 Output:
 ```json
-{ "accounts": [{ "accountId": "6002028658", "name": "FunNow" }, ...] }
+{ "accounts": [{ "accountId": "<accountId>", "name": "<account name>" }, ...] }
 ```
 
 Step 2 — find the container:
 ```bash
-gtools-cli gtm list-containers --account 6002028658
+gtools-cli gtm list-containers --account <accountId>
 ```
 Output:
 ```json
-{ "containers": [{ "containerId": "45544327", "publicId": "GTM-TVN467G", "name": "1. FunNow Web" }, ...] }
+{ "containers": [{ "containerId": "<containerId>", "publicId": "GTM-XXXXXX", "name": "<container name>" }, ...] }
 ```
 
 Step 3 — search:
 ```bash
-gtools-cli gtm search --account 6002028658 --container 45544327 --query purchase
+gtools-cli gtm search --account <accountId> --container <containerId> --query purchase
 ```
 Output:
 ```json
@@ -116,12 +116,12 @@ User: "v31 這個版本改了什麼？"
 
 Step 1 — list versions to confirm ids and find the predecessor:
 ```bash
-gtools-cli gtm list-versions --account 6002028658 --container 45544327
+gtools-cli gtm list-versions --account <accountId> --container <containerId>
 ```
 
 Step 2 — diff v30 → v31 (predecessor → target):
 ```bash
-gtools-cli gtm diff-versions --account 6002028658 --container 45544327 --from-version 30 --to-version 31
+gtools-cli gtm diff-versions --account <accountId> --container <containerId> --from-version 30 --to-version 31
 ```
 
 The `diff` result has three buckets — `added`, `removed`, `modified` — each entry tagged with `kind` (tag / trigger / variable / template / builtInVariable). `modified` entries include `changedFields` plus `before` / `after` for drill-down. Summarize in Traditional Chinese; drill into specific entries with `get-tag` / `get-trigger` etc. only if the user asks for more detail.
@@ -135,9 +135,9 @@ Step 1 — resolve both `GTM-XXXX` public IDs to numeric container IDs via `list
 Step 2 — diff the live versions by name (IDs differ across containers, so matching is by name):
 ```bash
 gtools-cli gtm diff-containers \
-  --account 6002028658 \
-  --from-container 45544327 \
-  --to-container 45544328
+  --account <accountId> \
+  --from-container <fromContainerId> \
+  --to-container <toContainerId>
 ```
 (Use `--from-account` / `--to-account` explicitly when the containers live in different accounts.)
 
