@@ -66,9 +66,31 @@ For `update-tag-html`:
 
 Before writing or reviewing the HTML body's JavaScript, read `references/gtm-html-sandbox.md` — GTM's Custom HTML tag runs in a restricted sandbox (no ES2018 object spread, `Object.assign` mutation gotchas) and several of the common mistakes come from assuming modern JS support.
 
+## Container aliases
+
+If `~/.config/gtools-cli/containers.json` exists, use it to resolve container aliases like "eatigo prod" or "funnow dev" directly to numeric `accountId` + `containerId`, skipping the `list-accounts` + `list-containers` round trips.
+
+File schema:
+```json
+{
+  "containers": {
+    "<product>-<env>": {
+      "publicId": "GTM-XXXXXX",
+      "accountId": "<numeric>",
+      "containerId": "<numeric>",
+      "name": "<original GTM container name>"
+    }
+  }
+}
+```
+
+Alias convention: lowercase `<product>-<env>`. Map the user's phrasing to the closest alias — `prod` covers production / live / 正式, `dev` covers staging / stg / test / 測試. If the user is ambiguous (e.g. just "eatigo" without an environment), ask which one before running anything.
+
+If the file doesn't exist, or the alias isn't in it, fall back to `list-accounts` → `list-containers` and match by name. Never assume the file is present — this is a per-machine optional config, and a fresh clone of the CLI won't have it.
+
 ## Workflow
 
-1. If the user mentions a container by name (e.g., "我的網站"), run `gtools-cli gtm list-accounts` then `gtools-cli gtm list-containers --account <id>` to find the accountId and containerId.
+1. If the user mentions a container by alias (e.g., "eatigo prod") or name (e.g., "我的網站"), first try resolving via `~/.config/gtools-cli/containers.json` (see "Container aliases"). Otherwise run `gtools-cli gtm list-accounts` then `gtools-cli gtm list-containers --account <id>` to find the accountId and containerId.
 2. For listing questions ("有哪些 tag?"), run the appropriate `list-*` command.
 3. For detail questions ("這個 tag 的設定?"), run `list-*` first to get the ID, then `get-*`.
 4. For keyword questions ("有沒有關於購買的 tag?"), use `search`. (`search` covers tags, triggers, and variables — custom templates are not included, so use `list-templates` for those.)
