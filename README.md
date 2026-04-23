@@ -4,6 +4,7 @@ A command-line tool for interacting with Google services. Currently supports:
 
 - **Google Tag Manager (GTM)** — containers, tags, triggers, variables, and custom templates
 - **Google Docs** — read document content as plain text
+- **Google Sheets** — read spreadsheet values across all tabs
 
 Built with [Bun](https://bun.sh) and the Google APIs.
 
@@ -11,7 +12,7 @@ Built with [Bun](https://bun.sh) and the Google APIs.
 
 - [Bun](https://bun.sh) v1.0+
 - A Google OAuth 2.0 client (Desktop app type)
-- Access to the Google services you want to query (GTM, Docs)
+- Access to the Google services you want to query (GTM, Docs, Sheets)
 
 ## Setup
 
@@ -36,6 +37,7 @@ source ~/.zshrc
 Required OAuth scopes (requested automatically on login):
 - `tagmanager.edit.containers` — edit GTM containers (but not publish)
 - `documents.readonly` — read Google Docs
+- `spreadsheets.readonly` — read Google Sheets
 
 **3. Register as a global command**
 
@@ -104,6 +106,19 @@ https://docs.google.com/document/d/1aBcDeFg.../edit
                                   document ID
 ```
 
+### Sheets Commands
+
+| Command | Flags | Description |
+|---------|-------|-------------|
+| `sheets get` | `--id <spreadsheetId>` | Read all tabs in a spreadsheet. Output: `{ spreadsheetId, title, sheets: [{ title, rows }] }` |
+
+The spreadsheet ID is the part between `/d/` and `/edit` in a Google Sheets URL:
+```
+https://docs.google.com/spreadsheets/d/1aBcDeFg.../edit
+                                      ^^^^^^^^^^
+                                      spreadsheet ID
+```
+
 ### Examples
 
 ```bash
@@ -154,6 +169,11 @@ gtools-cli gtm update-variable --account 123456789 --container 987654322 --id 63
 
 # Read a Google Doc's content
 gtools-cli docs get --id 1aBcDeFgHiJkLmNoPqRsTuVwXyZ
+
+# --- Sheets ---
+
+# Read every tab's values from a spreadsheet
+gtools-cli sheets get --id 1aBcDeFgHiJkLmNoPqRsTuVwXyZ
 ```
 
 ## Development
@@ -177,19 +197,22 @@ src/
   commands/install.ts    # Install skills command
   services/
     gtm/                 # Google Tag Manager service
-      router.ts, client.ts, types.ts, commands/
+      router.ts, client.ts, types.ts, diff.ts, commands/
     docs/                # Google Docs service
       router.ts, client.ts, extractText.ts, types.ts, commands/
+    sheets/              # Google Sheets service
+      router.ts, client.ts, types.ts, commands/
 ```
 
 Adding a new Google service means adding a new directory under `src/services/` with `router.ts`, `client.ts`, `types.ts`, and `commands/`, then registering it in `src/cli.ts`.
 
 ## Claude Code Skills
 
-Two skills are included for natural-language querying in Claude Code sessions:
+Three skills are included for natural-language querying in Claude Code sessions:
 
 - `skills/gtm/SKILL.md` — query GTM data
 - `skills/google-docs/SKILL.md` — query Google Docs content
+- `skills/google-sheets/SKILL.md` — query Google Sheets content
 
 To install, run the interactive installer:
 
