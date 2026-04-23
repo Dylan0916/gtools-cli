@@ -19,6 +19,7 @@ export interface ParsedArgs {
   query?: string;
   htmlFile?: string;
   skills?: boolean;
+  write?: boolean;
   fromVersion?: string;
   toVersion?: string;
   fromAccount?: string;
@@ -74,6 +75,8 @@ export function parseCliArgs(argv: string[]): ParsedArgs & { error?: string } {
       result.fromFile = argv[++i];
     } else if (argv[i] === '--skills') {
       result.skills = true;
+    } else if (argv[i] === '--write') {
+      result.write = true;
     }
   }
 
@@ -99,7 +102,7 @@ async function run(): Promise<void> {
   // Top-level commands (no service prefix)
   if (!args.service) {
     if (args.command === 'login') {
-      await runLogin();
+      await runLogin({ writeAccess: args.write === true });
       return;
     }
 

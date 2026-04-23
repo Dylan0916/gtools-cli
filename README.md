@@ -36,8 +36,8 @@ source ~/.zshrc
 
 Required OAuth scopes (requested automatically on login):
 - `tagmanager.edit.containers` — edit GTM containers (but not publish)
-- `documents.readonly` — read Google Docs
-- `spreadsheets.readonly` — read Google Sheets
+- `documents.readonly` — read Google Docs (upgraded to `documents` with `--write`)
+- `spreadsheets.readonly` — read Google Sheets (upgraded to `spreadsheets` with `--write`)
 
 **3. Register as a global command**
 
@@ -56,6 +56,14 @@ gtools-cli login
 ```
 
 This opens a browser for Google OAuth consent. Tokens are stored at `~/.config/gtools-cli/token.json`.
+
+To request read+write scopes (currently used by future Docs/Sheets write commands), add `--write`:
+
+```bash
+gtools-cli login --write
+```
+
+This upgrades the Docs and Sheets scopes from `*.readonly` to their full counterparts. Re-run this whenever you want to change the granted scopes — the consent screen will appear again.
 
 ## Usage
 
