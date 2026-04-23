@@ -141,6 +141,18 @@ describe('parseCliArgs', () => {
       expect(args.command).toBe('login');
     });
 
+    it('parses login --write for read+write scopes', () => {
+      const args = parseCliArgs(['login', '--write']);
+      expect(args.service).toBeUndefined();
+      expect(args.command).toBe('login');
+      expect(args.write).toBe(true);
+    });
+
+    it('defaults write to undefined when --write is absent', () => {
+      const args = parseCliArgs(['login']);
+      expect(args.write).toBeUndefined();
+    });
+
     it('handles empty args', () => {
       const args = parseCliArgs([]);
       expect(args.service).toBeUndefined();

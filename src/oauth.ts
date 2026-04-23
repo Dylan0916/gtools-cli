@@ -2,8 +2,12 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'http';
 import { spawn } from 'child_process';
 import { google } from 'googleapis';
 
-import { OAUTH_PORT, REDIRECT_URI, SCOPES } from './config';
+import { OAUTH_PORT, READ_ONLY_SCOPES, REDIRECT_URI, WRITE_SCOPES } from './config';
 import type { StoredTokens } from './tokenStore';
+
+export interface LoginOptions {
+  writeAccess?: boolean;
+}
 
 function getEnvCredentials(): { clientId: string; clientSecret: string } {
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -42,13 +46,15 @@ function sendHtml(res: ServerResponse, html: string): void {
   res.end(html);
 }
 
-export async function runLoginFlow(): Promise<StoredTokens> {
+export async function runLoginFlow(options: LoginOptions = {}): Promise<StoredTokens> {
   const { clientId, clientSecret } = getEnvCredentials();
   const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, REDIRECT_URI);
 
+  const scopes = options.writeAccess ? WRITE_SCOPES : READ_ONLY_SCOPES;
+
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
-    scope: SCOPES,
+    scope: scopes,
     // Force consent screen so we always receive a refresh_token
     prompt: 'consent',
   });
