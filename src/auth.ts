@@ -56,10 +56,11 @@ export function getAuthClient(): AuthClient {
   // subsequent refresh events that omit refresh_token.
   let currentTokens: StoredTokens = tokens;
   oauth2Client.on('tokens', (newTokens) => {
-    const merged: StoredTokens = { ...currentTokens, ...newTokens };
-    if (!newTokens.refresh_token && currentTokens.refresh_token) {
-      merged.refresh_token = currentTokens.refresh_token;
-    }
+    const merged: StoredTokens = {
+      ...currentTokens,
+      ...newTokens,
+      refresh_token: newTokens.refresh_token ?? currentTokens.refresh_token,
+    };
     try {
       saveTokens(merged);
       currentTokens = merged;
