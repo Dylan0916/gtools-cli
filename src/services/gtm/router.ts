@@ -10,6 +10,7 @@ import { runUpdateTagHtml, runUpdateVariable } from './commands/update';
 import { runGetLiveVersion, runGetVersion, runListVersions } from './commands/version';
 import { runDiffContainers, runDiffVersions } from './commands/diff';
 import { runCreateTag, runCreateTrigger, runCreateVariable } from './commands/create';
+import { runCreateWorkspace, runDeleteWorkspace, runListWorkspaces } from './commands/workspace';
 
 // Commands that need only --account
 const ACCOUNT_COMMANDS = ['list-containers'];
@@ -19,12 +20,13 @@ const CONTAINER_COMMANDS = [
   'list-triggers',
   'list-variables',
   'list-templates',
+  'list-workspaces',
   'search',
   'list-versions',
   'get-live-version',
 ];
 // Commands that need --account + --container + --id
-const ID_COMMANDS = ['get-tag', 'get-trigger', 'get-variable', 'get-template', 'get-version'];
+const ID_COMMANDS = ['get-tag', 'get-trigger', 'get-variable', 'get-template', 'get-version', 'delete-workspace'];
 // Commands that need --account + --container + --id + --html-file
 const HTML_FILE_COMMANDS = ['update-tag-html'];
 // Commands that need --account + --container + --from-version + --to-version
@@ -35,6 +37,8 @@ const CONTAINER_DIFF_COMMANDS = ['diff-containers'];
 const CREATE_COMMANDS = ['create-tag', 'create-trigger', 'create-variable'];
 // Commands that need --account + --container + --id + --from-file
 const UPDATE_FROM_FILE_COMMANDS = ['update-variable'];
+// Commands that need --account + --container + --name (+ optional --description)
+const WORKSPACE_CREATE_COMMANDS = ['create-workspace'];
 
 const ALL_COMMANDS = [
   'list-accounts',
@@ -46,6 +50,7 @@ const ALL_COMMANDS = [
   ...CONTAINER_DIFF_COMMANDS,
   ...CREATE_COMMANDS,
   ...UPDATE_FROM_FILE_COMMANDS,
+  ...WORKSPACE_CREATE_COMMANDS,
 ];
 
 function resolveDiffContainerAccounts(args: ParsedArgs): { fromAccount?: string; toAccount?: string } {
@@ -151,6 +156,18 @@ export function validateGtmArgs(args: ParsedArgs): string | null {
     }
   }
 
+  if (WORKSPACE_CREATE_COMMANDS.includes(args.command)) {
+    if (!args.account) {
+      return `Command "gtm ${args.command}" requires --account <accountId>`;
+    }
+    if (!args.container) {
+      return `Command "gtm ${args.command}" requires --container <containerId>`;
+    }
+    if (!args.name) {
+      return `Command "gtm ${args.command}" requires --name <workspaceName>`;
+    }
+  }
+
   return null;
 }
 
@@ -182,7 +199,7 @@ export async function routeGtm(auth: AuthClient, args: ParsedArgs): Promise<Comm
       }
       return runSearch(auth, args.account!, args.container!, args.query);
     case 'update-tag-html':
-      return runUpdateTagHtml(auth, args.account!, args.container!, args.id!, args.htmlFile!);
+      return runUpdateTagHtml(auth, args.account!, args.container!, args.id!, args.htmlFile!, args.workspace);
     case 'list-versions':
       return runListVersions(auth, args.account!, args.container!);
     case 'get-version':
@@ -196,13 +213,19 @@ export async function routeGtm(auth: AuthClient, args: ParsedArgs): Promise<Comm
       return runDiffContainers(auth, fromAccount!, args.fromContainer!, toAccount!, args.toContainer!);
     }
     case 'create-tag':
-      return runCreateTag(auth, args.account!, args.container!, args.fromFile!);
+      return runCreateTag(auth, args.account!, args.container!, args.fromFile!, args.workspace);
     case 'create-trigger':
-      return runCreateTrigger(auth, args.account!, args.container!, args.fromFile!);
+      return runCreateTrigger(auth, args.account!, args.container!, args.fromFile!, args.workspace);
     case 'create-variable':
-      return runCreateVariable(auth, args.account!, args.container!, args.fromFile!);
+      return runCreateVariable(auth, args.account!, args.container!, args.fromFile!, args.workspace);
     case 'update-variable':
-      return runUpdateVariable(auth, args.account!, args.container!, args.id!, args.fromFile!);
+      return runUpdateVariable(auth, args.account!, args.container!, args.id!, args.fromFile!, args.workspace);
+    case 'list-workspaces':
+      return runListWorkspaces(auth, args.account!, args.container!);
+    case 'create-workspace':
+      return runCreateWorkspace(auth, args.account!, args.container!, args.name!, args.description);
+    case 'delete-workspace':
+      return runDeleteWorkspace(auth, args.account!, args.container!, args.id!);
     default:
       return { error: `Unknown GTM command: "${args.command}"` };
   }

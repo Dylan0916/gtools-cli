@@ -42,8 +42,14 @@ const noop = mock(async () => {
   throw new Error('unexpected call');
 });
 
+const mockResolveWorkspaceId = mock(
+  async (_auth: unknown, _acc: string, _container: string, workspace?: string): Promise<string> =>
+    workspace ?? '1',
+);
+
 mock.module('@/services/gtm/client', () => ({
   getFirstWorkspaceId: mockGetFirstWorkspaceId,
+  resolveWorkspaceId: mockResolveWorkspaceId,
   createTag: mockCreateTag,
   createTrigger: mockCreateTrigger,
   createVariable: mockCreateVariable,
@@ -54,6 +60,9 @@ mock.module('@/services/gtm/client', () => ({
   listTags: noop,
   listTriggers: noop,
   listVariables: noop,
+  listWorkspaces: noop,
+  createWorkspace: noop,
+  deleteWorkspace: noop,
   getTag: noop,
   getTrigger: noop,
   getVariable: noop,
@@ -85,7 +94,7 @@ describe('runCreateTag', () => {
       runCreateTag({} as any, '111', '222', path),
     );
 
-    expect(mockGetFirstWorkspaceId).toHaveBeenCalledWith({}, '111', '222');
+    expect(mockResolveWorkspaceId).toHaveBeenCalledWith({}, '111', '222', undefined);
     expect(mockCreateTag).toHaveBeenCalledWith({}, '111', '222', '1', payload);
     if ('tag' in result) {
       expect(result.tag.name).toBe('Mixpanel - Search Query Sent');
@@ -132,6 +141,16 @@ describe('runCreateTag', () => {
     // When wrapped, the CLI should unwrap .tag before passing to client
     const call = mockCreateTag.mock.calls[mockCreateTag.mock.calls.length - 1];
     expect(call[4]).toEqual(payload.tag);
+  });
+
+  it('uses the explicit workspace id when --workspace is supplied', async () => {
+    const payload = { name: 'workspace-targeted tag', type: 'html', parameter: [] };
+
+    await withJsonFile(payload, (path) => runCreateTag({} as any, '111', '222', path, '77'));
+
+    expect(mockResolveWorkspaceId).toHaveBeenLastCalledWith({}, '111', '222', '77');
+    const call = mockCreateTag.mock.calls[mockCreateTag.mock.calls.length - 1];
+    expect(call[3]).toBe('77');
   });
 });
 

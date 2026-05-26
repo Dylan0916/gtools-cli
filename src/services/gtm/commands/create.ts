@@ -1,29 +1,35 @@
 import { readFile } from 'fs/promises';
 
-import { createTag, createTrigger, createVariable, getFirstWorkspaceId } from '@/services/gtm/client';
+import { createTag, createTrigger, createVariable, resolveWorkspaceId } from '@/services/gtm/client';
 import type { AuthClient } from '@/auth';
 import type { CommandResult } from '@/types';
 
 type WrapperKey = 'tag' | 'trigger' | 'variable';
 
-async function loadJson(fromFile: string): Promise<Record<string, unknown> | { error: string }> {
+// Discriminated by `ok` so callers can narrow without false-positive matches on `error` keys that
+// might legitimately appear inside a successfully-parsed payload.
+type LoadJsonResult =
+  | { ok: true; data: Record<string, unknown> }
+  | { ok: false; error: string };
+
+async function loadJson(fromFile: string): Promise<LoadJsonResult> {
   let raw: string;
   try {
     raw = await readFile(fromFile, 'utf-8');
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    return { error: `Failed to read JSON file "${fromFile}": ${message}` };
+    return { ok: false, error: `Failed to read JSON file "${fromFile}": ${message}` };
   }
 
   try {
     const parsed = JSON.parse(raw);
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-      return { error: `Expected a JSON object in "${fromFile}"` };
+      return { ok: false, error: `Expected a JSON object in "${fromFile}"` };
     }
-    return parsed as Record<string, unknown>;
+    return { ok: true, data: parsed as Record<string, unknown> };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    return { error: `Failed to parse JSON from "${fromFile}": ${message}` };
+    return { ok: false, error: `Failed to parse JSON from "${fromFile}": ${message}` };
   }
 }
 
@@ -42,13 +48,14 @@ export async function runCreateTag(
   accountId: string,
   containerId: string,
   fromFile: string,
+  workspace?: string,
 ): Promise<CommandResult> {
   const loaded = await loadJson(fromFile);
-  if ('error' in loaded) {
-    return loaded;
+  if (!loaded.ok) {
+    return { error: loaded.error };
   }
-  const payload = unwrap(loaded, 'tag');
-  const workspaceId = await getFirstWorkspaceId(auth, accountId, containerId);
+  const payload = unwrap(loaded.data, 'tag');
+  const workspaceId = await resolveWorkspaceId(auth, accountId, containerId, workspace);
   const tag = await createTag(auth, accountId, containerId, workspaceId, payload);
   return { tag };
 }
@@ -58,13 +65,14 @@ export async function runCreateTrigger(
   accountId: string,
   containerId: string,
   fromFile: string,
+  workspace?: string,
 ): Promise<CommandResult> {
   const loaded = await loadJson(fromFile);
-  if ('error' in loaded) {
-    return loaded;
+  if (!loaded.ok) {
+    return { error: loaded.error };
   }
-  const payload = unwrap(loaded, 'trigger');
-  const workspaceId = await getFirstWorkspaceId(auth, accountId, containerId);
+  const payload = unwrap(loaded.data, 'trigger');
+  const workspaceId = await resolveWorkspaceId(auth, accountId, containerId, workspace);
   const trigger = await createTrigger(auth, accountId, containerId, workspaceId, payload);
   return { trigger };
 }
@@ -74,13 +82,14 @@ export async function runCreateVariable(
   accountId: string,
   containerId: string,
   fromFile: string,
+  workspace?: string,
 ): Promise<CommandResult> {
   const loaded = await loadJson(fromFile);
-  if ('error' in loaded) {
-    return loaded;
+  if (!loaded.ok) {
+    return { error: loaded.error };
   }
-  const payload = unwrap(loaded, 'variable');
-  const workspaceId = await getFirstWorkspaceId(auth, accountId, containerId);
+  const payload = unwrap(loaded.data, 'variable');
+  const workspaceId = await resolveWorkspaceId(auth, accountId, containerId, workspace);
   const variable = await createVariable(auth, accountId, containerId, workspaceId, payload);
   return { variable };
 }

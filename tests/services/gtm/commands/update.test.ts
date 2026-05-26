@@ -23,11 +23,16 @@ const mockUpdateVariable = mock(
   }),
 );
 const mockGetFirstWorkspaceId = mock(async (): Promise<string> => '1');
+const mockResolveWorkspaceId = mock(
+  async (_auth: unknown, _acc: string, _container: string, workspace?: string): Promise<string> =>
+    workspace ?? '1',
+);
 
 mock.module('@/services/gtm/client', () => ({
   updateTagHtml: mockUpdateTagHtml,
   updateVariable: mockUpdateVariable,
   getFirstWorkspaceId: mockGetFirstWorkspaceId,
+  resolveWorkspaceId: mockResolveWorkspaceId,
 }));
 
 const { runUpdateTagHtml, runUpdateVariable } = await import('@/services/gtm/commands/update');
@@ -76,7 +81,7 @@ describe('runUpdateVariable', () => {
     try {
       const result = await runUpdateVariable({} as any, '111', '222', '99', tmpFile);
 
-      expect(mockGetFirstWorkspaceId).toHaveBeenCalledWith({}, '111', '222');
+      expect(mockResolveWorkspaceId).toHaveBeenCalledWith({}, '111', '222', undefined);
       expect(mockUpdateVariable).toHaveBeenCalledWith({}, '111', '222', '1', '99', payload.parameter);
       if ('variable' in result) {
         expect(result.variable.parameter).toEqual(payload.parameter);

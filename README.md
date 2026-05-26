@@ -90,16 +90,19 @@ All output is JSON. Top-level commands (`login`) don't require a service prefix.
 | `gtm get-variable` | `--account <id> --container <id> --id <variableId>` | Full variable details |
 | `gtm get-template` | `--account <id> --container <id> --id <templateId>` | Full template details including source code |
 | `gtm search` | `--account <id> --container <id> --query <keyword>` | Search tags, triggers, and variables by keyword |
-| `gtm update-tag-html` | `--account <id> --container <id> --id <tagId> --html-file <path>` | Update an HTML tag's `html` parameter from a file |
+| `gtm update-tag-html` | `--account <id> --container <id> --id <tagId> --html-file <path> [--workspace <id>]` | Update an HTML tag's `html` parameter from a file |
 | `gtm list-versions` | `--account <id> --container <id>` | List all container versions (published + drafts) |
 | `gtm get-version` | `--account <id> --container <id> --id <versionId>` | Full snapshot of a version (tags/triggers/variables/templates/builtInVariables) |
 | `gtm get-live-version` | `--account <id> --container <id>` | Full snapshot of the currently published version |
 | `gtm diff-versions` | `--account <id> --container <id> --from-version <id> --to-version <id>` | Diff two versions in the same container (matched by resource ID). Output: `added` / `removed` / `modified` with field-level diff |
 | `gtm diff-containers` | `--from-account <id> --from-container <id> --to-account <id> --to-container <id>` | Diff the live versions of two containers (matched by resource name). `--account` may be used as a shared default if both containers live in the same account |
-| `gtm create-tag` | `--account <id> --container <id> --from-file <path>` | Create a tag from a JSON file (accepts raw tag object or the wrapped `{tag: ...}` format emitted by `get-tag`) |
-| `gtm create-trigger` | `--account <id> --container <id> --from-file <path>` | Create a trigger from a JSON file (raw trigger object or `{trigger: ...}`) |
-| `gtm create-variable` | `--account <id> --container <id> --from-file <path>` | Create a variable from a JSON file (raw variable object or `{variable: ...}`) |
-| `gtm update-variable` | `--account <id> --container <id> --id <variableId> --from-file <path>` | Replace an existing variable's `parameter` array with the one from a JSON file |
+| `gtm create-tag` | `--account <id> --container <id> --from-file <path> [--workspace <id>]` | Create a tag from a JSON file (accepts raw tag object or the wrapped `{tag: ...}` format emitted by `get-tag`). Targets the first workspace unless `--workspace` is supplied |
+| `gtm create-trigger` | `--account <id> --container <id> --from-file <path> [--workspace <id>]` | Create a trigger from a JSON file (raw trigger object or `{trigger: ...}`) |
+| `gtm create-variable` | `--account <id> --container <id> --from-file <path> [--workspace <id>]` | Create a variable from a JSON file (raw variable object or `{variable: ...}`) |
+| `gtm update-variable` | `--account <id> --container <id> --id <variableId> --from-file <path> [--workspace <id>]` | Replace an existing variable's `parameter` array with the one from a JSON file |
+| `gtm list-workspaces` | `--account <id> --container <id>` | List all workspaces (draft buckets) in a container |
+| `gtm create-workspace` | `--account <id> --container <id> --name <workspaceName> [--description <text>]` | Create a new workspace forked from the current live version |
+| `gtm delete-workspace` | `--account <id> --container <id> --id <workspaceId>` | Delete a workspace |
 
 ### Docs Commands
 
@@ -172,6 +175,17 @@ gtools-cli gtm create-tag --account 123456789 --container 987654322 --from-file 
 # Update a variable's parameter block (use get-variable output as input)
 gtools-cli gtm get-variable --account 123456789 --container 987654321 --id 27 > /tmp/src-var.json
 gtools-cli gtm update-variable --account 123456789 --container 987654322 --id 63 --from-file /tmp/src-var.json
+
+# Create a new workspace (forked from the current live version), then
+# create resources inside it via --workspace so the change can be
+# published independently of pending changes in other workspaces.
+gtools-cli gtm create-workspace --account 123456789 --container 987654322 --name ZOEKIT-18164
+#   → response includes the new workspaceId, e.g. "82"
+gtools-cli gtm create-tag --account 123456789 --container 987654322 --from-file /tmp/src-tag.json --workspace 82
+
+# List / delete workspaces
+gtools-cli gtm list-workspaces --account 123456789 --container 987654322
+gtools-cli gtm delete-workspace --account 123456789 --container 987654322 --id 82
 
 # --- Docs ---
 

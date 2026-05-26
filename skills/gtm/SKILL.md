@@ -41,16 +41,19 @@ gtools-cli gtm <command> [flags]
 | `list-templates` | `--account <id> --container <id>` | List custom templates in a container |
 | `get-template` | `--account <id> --container <id> --id <templateId>` | Full template details including source code (`templateData`) |
 | `search` | `--account <id> --container <id> --query <keyword>` | Search tags, triggers, and variables by keyword |
-| `update-tag-html` | `--account <id> --container <id> --id <tagId> --html-file <path>` | Update an HTML tag's `html` parameter with the file's contents |
+| `update-tag-html` | `--account <id> --container <id> --id <tagId> --html-file <path> [--workspace <id>]` | Update an HTML tag's `html` parameter with the file's contents |
 | `list-versions` | `--account <id> --container <id>` | List container versions with ids, names, and counts |
 | `get-version` | `--account <id> --container <id> --id <versionId>` | Full snapshot of a version (tags/triggers/variables/templates/builtInVariables) |
 | `get-live-version` | `--account <id> --container <id>` | Full snapshot of the currently published version |
 | `diff-versions` | `--account <id> --container <id> --from-version <id> --to-version <id>` | Diff two versions in the same container (matched by resource ID) |
 | `diff-containers` | `--from-account <id> --from-container <id> --to-account <id> --to-container <id>` | Diff the live versions of two containers (matched by resource name). `--account` may substitute when both containers share an account |
-| `create-tag` | `--account <id> --container <id> --from-file <path>` | Create a tag from a JSON payload file (accepts raw tag object or `{tag: ...}` wrapper) |
-| `create-trigger` | `--account <id> --container <id> --from-file <path>` | Create a trigger (accepts raw trigger object or `{trigger: ...}`) |
-| `create-variable` | `--account <id> --container <id> --from-file <path>` | Create a variable (accepts raw variable object or `{variable: ...}`) |
-| `update-variable` | `--account <id> --container <id> --id <variableId> --from-file <path>` | Replace an existing variable's `parameter` array with one from a JSON file |
+| `create-tag` | `--account <id> --container <id> --from-file <path> [--workspace <id>]` | Create a tag from a JSON payload file (accepts raw tag object or `{tag: ...}` wrapper). Targets the first workspace unless `--workspace` is supplied |
+| `create-trigger` | `--account <id> --container <id> --from-file <path> [--workspace <id>]` | Create a trigger (accepts raw trigger object or `{trigger: ...}`) |
+| `create-variable` | `--account <id> --container <id> --from-file <path> [--workspace <id>]` | Create a variable (accepts raw variable object or `{variable: ...}`) |
+| `update-variable` | `--account <id> --container <id> --id <variableId> --from-file <path> [--workspace <id>]` | Replace an existing variable's `parameter` array with one from a JSON file |
+| `list-workspaces` | `--account <id> --container <id>` | List all workspaces (draft buckets) in a container |
+| `create-workspace` | `--account <id> --container <id> --name <workspaceName> [--description <text>]` | Create a new workspace forked from the current live version. Returns the new `workspaceId` to pass into subsequent `--workspace` flags |
+| `delete-workspace` | `--account <id> --container <id> --id <workspaceId>` | Delete a workspace (any unmerged changes inside are discarded) |
 
 **Important:** `--account` takes the numeric accountId (not the name). `--container` takes the numeric containerId (not the `GTM-XXXXXX` public ID). Run `list-accounts` → `list-containers` first to resolve names to IDs.
 
@@ -61,7 +64,7 @@ gtools-cli gtm <command> [flags]
 For `update-tag-html`:
 1. Write the new HTML (including the `<script>` wrapper) to a temp file — e.g. `/tmp/new-tag.html`.
 2. Run `gtools-cli gtm update-tag-html --account <id> --container <id> --id <tagId> --html-file /tmp/new-tag.html`.
-3. The change goes into the default workspace and is NOT published — the user still needs to publish via the GTM UI.
+3. The change goes into the first workspace (typically "Default Workspace") and is NOT published — the user still needs to publish via the GTM UI. Pass `--workspace <id>` to target a different workspace (see the "Workspaces" section below).
 4. Clean up the temp file once you're sure the update succeeded (keep it around if you might need to retry).
 
 Before writing or reviewing the HTML body's JavaScript, read `references/gtm-html-sandbox.md` — GTM's Custom HTML tag runs in a restricted sandbox (no ES2018 object spread, `Object.assign` mutation gotchas) and several of the common mistakes come from assuming modern JS support.
@@ -97,7 +100,7 @@ If the file doesn't exist, or the alias isn't in it, fall back to `list-accounts
 5. For custom template questions ("這個範本的程式碼是什麼?"), run `list-templates` to find the templateId, then `get-template` and inspect `templateData` for the sandboxed JS source.
 6. For version questions ("這個版本改了什麼?"), run `list-versions` to find version IDs. The `containerVersionId` is a monotonically increasing number — to diff the target version against its predecessor, use `--from-version <target - 1>` and `--to-version <target>`. If `<target - 1>` is missing from the list (a version can be deleted), pick the largest id smaller than the target.
 7. For cross-container sync questions ("兩個 container 哪裡不一樣?" / "把 A 的設定搬到 B"), use `diff-containers` with the live versions. IDs legitimately differ across containers, so matching is by name — results are safe to use as a human-reviewable action list.
-8. Parse the JSON output and answer in Traditional Chinese.
+8. For workspace questions ("有哪些 workspace?", "建一個新的 workspace", "我想單獨發布我的變更"), use `list-workspaces` / `create-workspace` / `delete-workspace` and pass the new workspace's id via `--workspace` to subsequent `create-*` / `update-*` calls so the work stays isolated from other pending changes. See the "Workspaces" section below.
 
 ## Example: Full Flow
 
@@ -195,7 +198,33 @@ gtools-cli gtm create-tag --account <acc> --container <prod-container> --from-fi
 
 For resources that already exist in prod but have outdated content, prefer `update-tag-html` (HTML tags) or `update-variable` (any variable type) to modify in place rather than creating duplicates.
 
-All create/update operations go into the default workspace and are **not published** — remind the user to publish via the GTM UI after review.
+All create/update operations go into the targeted workspace (first workspace by default, or whichever id you pass via `--workspace`) and are **not published** — remind the user to publish via the GTM UI after review.
+
+## Workspaces
+
+GTM workspaces are draft buckets inside a container. Publishing the workspace publishes **everything** currently in it (a workspace = diff vs current live). If the default workspace already has pending changes from other people, dropping new work into it forces those changes to ship together. The remedy is a dedicated workspace per task.
+
+The flow:
+```bash
+# 1. (optional) Inspect what workspaces already exist
+gtools-cli gtm list-workspaces --account <acc> --container <container>
+
+# 2. Create a fresh workspace forked from the current live version
+gtools-cli gtm create-workspace --account <acc> --container <container> --name ZOEKIT-18164
+# → returns { "workspace": { "workspaceId": "82", ... } }
+
+# 3. Run create-/update- commands inside that workspace via --workspace
+gtools-cli gtm create-trigger --account <acc> --container <container> --from-file /tmp/trigger.json --workspace 82
+# capture the new triggerId, remap, then:
+gtools-cli gtm create-tag --account <acc> --container <container> --from-file /tmp/tag-remapped.json --workspace 82
+
+# 4. (optional) Tear down the workspace if you abandon the work
+gtools-cli gtm delete-workspace --account <acc> --container <container> --id 82
+```
+
+When `--workspace` is omitted, the CLI falls back to the first workspace returned by GTM (historically the "Default Workspace"). Tell the user explicitly which workspace was targeted so they know where to publish from in the UI. After publish, GTM typically resets / removes the workspace automatically — no manual cleanup needed.
+
+GTM free tier caps workspaces at 3 per container, so prefer `delete-workspace` (or letting publish reset it) over leaving stale draft workspaces around.
 
 ## Error Handling
 

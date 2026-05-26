@@ -27,6 +27,9 @@ export interface ParsedArgs {
   fromContainer?: string;
   toContainer?: string;
   fromFile?: string;
+  workspace?: string;
+  name?: string;
+  description?: string;
 }
 
 export function parseCliArgs(argv: string[]): ParsedArgs & { error?: string } {
@@ -73,6 +76,12 @@ export function parseCliArgs(argv: string[]): ParsedArgs & { error?: string } {
       result.toContainer = argv[++i];
     } else if (argv[i] === '--from-file' && argv[i + 1]) {
       result.fromFile = argv[++i];
+    } else if (argv[i] === '--workspace' && argv[i + 1]) {
+      result.workspace = argv[++i];
+    } else if (argv[i] === '--name' && argv[i + 1]) {
+      result.name = argv[++i];
+    } else if (argv[i] === '--description' && argv[i + 1]) {
+      result.description = argv[++i];
     } else if (argv[i] === '--skills') {
       result.skills = true;
     } else if (argv[i] === '--write') {
