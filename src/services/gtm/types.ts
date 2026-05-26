@@ -52,6 +52,13 @@ export interface GtmVariableDetail extends GtmVariable {
 export interface GtmTemplate {
   templateId: string;
   name: string;
+  [extra: string]: unknown;
+}
+
+export interface GtmWorkspace {
+  workspaceId: string;
+  name: string;
+  description?: string;
 }
 
 export interface GtmTemplateDetail extends GtmTemplate {
@@ -68,6 +75,7 @@ export interface SearchResult {
 export interface GtmBuiltInVariable {
   name: string;
   type: string;
+  [extra: string]: unknown;
 }
 
 export interface GtmVersionHeader {
@@ -134,4 +142,7 @@ export type GtmCommandResult =
   | { results: SearchResult[] }
   | { versions: GtmVersionHeader[] }
   | { version: GtmVersionDetail }
-  | { diff: GtmDiffResult };
+  | { diff: GtmDiffResult }
+  | { workspaces: GtmWorkspace[] }
+  | { workspace: GtmWorkspace }
+  | { deletedWorkspaceId: string };

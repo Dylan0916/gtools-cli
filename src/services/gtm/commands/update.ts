@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises';
 
-import { getFirstWorkspaceId, updateTagHtml, updateVariable } from '@/services/gtm/client';
+import { resolveWorkspaceId, updateTagHtml, updateVariable } from '@/services/gtm/client';
 import type { AuthClient } from '@/auth';
 import type { CommandResult } from '@/types';
 
@@ -9,7 +9,8 @@ export async function runUpdateTagHtml(
   accountId: string,
   containerId: string,
   tagId: string,
-  htmlFile: string
+  htmlFile: string,
+  workspace?: string,
 ): Promise<CommandResult> {
   let htmlContent: string;
   try {
@@ -19,7 +20,7 @@ export async function runUpdateTagHtml(
     return { error: `Failed to read html file "${htmlFile}": ${message}` };
   }
 
-  const workspaceId = await getFirstWorkspaceId(auth, accountId, containerId);
+  const workspaceId = await resolveWorkspaceId(auth, accountId, containerId, workspace);
   const tag = await updateTagHtml(auth, accountId, containerId, workspaceId, tagId, htmlContent);
   return { tag };
 }
@@ -30,6 +31,7 @@ export async function runUpdateVariable(
   containerId: string,
   variableId: string,
   fromFile: string,
+  workspace?: string,
 ): Promise<CommandResult> {
   let raw: string;
   try {
@@ -61,7 +63,7 @@ export async function runUpdateVariable(
     return { error: `Expected a "parameter" array in the JSON payload` };
   }
 
-  const workspaceId = await getFirstWorkspaceId(auth, accountId, containerId);
+  const workspaceId = await resolveWorkspaceId(auth, accountId, containerId, workspace);
   const variable = await updateVariable(
     auth,
     accountId,

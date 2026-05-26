@@ -14,6 +14,7 @@ import type {
   GtmVariableDetail,
   GtmVersionDetail,
   GtmVersionHeader,
+  GtmWorkspace,
 } from './types';
 import type { AuthClient } from '@/auth';
 
@@ -40,6 +41,56 @@ export async function listContainers(auth: AuthClient, accountId: string): Promi
   }));
 }
 
+function mapWorkspace(w: any): GtmWorkspace {
+  return {
+    workspaceId: w.workspaceId!,
+    name: w.name ?? '',
+    description: w.description ?? undefined,
+  };
+}
+
+export async function listWorkspaces(
+  auth: AuthClient,
+  accountId: string,
+  containerId: string
+): Promise<GtmWorkspace[]> {
+  const res = await tagmanager.accounts.containers.workspaces.list({
+    auth,
+    parent: `accounts/${accountId}/containers/${containerId}`,
+  });
+  return (res.data.workspace ?? []).map(mapWorkspace);
+}
+
+export async function createWorkspace(
+  auth: AuthClient,
+  accountId: string,
+  containerId: string,
+  name: string,
+  description?: string
+): Promise<GtmWorkspace> {
+  const res = await tagmanager.accounts.containers.workspaces.create({
+    auth,
+    parent: `accounts/${accountId}/containers/${containerId}`,
+    requestBody: {
+      name,
+      ...(description ? { description } : {}),
+    },
+  });
+  return mapWorkspace(res.data);
+}
+
+export async function deleteWorkspace(
+  auth: AuthClient,
+  accountId: string,
+  containerId: string,
+  workspaceId: string
+): Promise<void> {
+  await tagmanager.accounts.containers.workspaces.delete({
+    auth,
+    path: `accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}`,
+  });
+}
+
 export async function getFirstWorkspaceId(
   auth: AuthClient,
   accountId: string,
@@ -54,6 +105,24 @@ export async function getFirstWorkspaceId(
     throw new Error(`No workspaces found in container ${containerId}`);
   }
   return workspaces[0].workspaceId!;
+}
+
+/**
+ * Pick the workspace to target. Returns the explicit workspaceId if provided,
+ * otherwise falls back to the first workspace returned by GTM (typically the
+ * "Default Workspace") to preserve historical behaviour.
+ */
+export async function resolveWorkspaceId(
+  auth: AuthClient,
+  accountId: string,
+  containerId: string,
+  workspaceId?: string
+): Promise<string> {
+  if (workspaceId) {
+    return workspaceId;
+  }
+
+  return getFirstWorkspaceId(auth, accountId, containerId);
 }
 
 export async function listTags(
