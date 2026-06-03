@@ -1,13 +1,37 @@
 {
   "name": "gtools-cli",
   "version": "1.0.0",
-  "private": true,
+  "description": "CLI for interacting with Google services, built with Bun",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dylan0916/gtools-cli.git"
+  },
+  "homepage": "https://github.com/Dylan0916/gtools-cli#readme",
+  "bugs": "https://github.com/Dylan0916/gtools-cli/issues",
+  "keywords": [
+    "cli",
+    "google",
+    "gtm",
+    "tag-manager",
+    "google-docs",
+    "google-sheets",
+    "bun"
+  ],
   "scripts": {
     "start": "bun run src/cli.ts",
     "test": "bun test"
   },
   "bin": {
     "gtools-cli": "src/cli.ts"
+  },
+  "files": [
+    "src",
+    "skills",
+    "README.md"
+  ],
+  "engines": {
+    "bun": ">=1.0.0"
   },
   "dependencies": {
     "googleapis": "^173.0.0"

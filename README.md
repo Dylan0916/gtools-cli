@@ -16,13 +16,25 @@ Built with [Bun](https://bun.sh) and the Google APIs.
 
 ## Setup
 
-**1. Clone and install dependencies**
+**1. Install**
+
+```bash
+bun add -g gtools-cli
+```
+
+> `npm install -g gtools-cli` also works, but the CLI still requires Bun at runtime to execute.
+
+<details>
+<summary>From source (for development)</summary>
 
 ```bash
 git clone https://github.com/Dylan0916/gtools-cli.git
 cd gtools-cli
 bun install
+bun link   # registers `gtools-cli` as a global command
 ```
+
+</details>
 
 **2. Set up Google OAuth credentials**
 
@@ -39,17 +51,7 @@ Required OAuth scopes (requested automatically on login):
 - `documents.readonly` — read Google Docs (upgraded to `documents` with `--write`)
 - `spreadsheets.readonly` — read Google Sheets (upgraded to `spreadsheets` with `--write`)
 
-**3. Register as a global command**
-
-Run this inside the `gtools-cli` directory (from step 1):
-
-```bash
-bun link
-```
-
-After this, `gtools-cli` is available anywhere in your terminal.
-
-**4. Log in**
+**3. Log in**
 
 ```bash
 gtools-cli login
